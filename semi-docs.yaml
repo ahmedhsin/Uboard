@@ -1,0 +1,149 @@
+User Object:
+- username: string
+- email: string
+- first_name: string
+- last_name: string
+- password_hash: string (hashed password for security)
+- boards: list of Board IDs
+- fav_boards: list of Board IDs
+- fav_topics: list of Topic IDs
+- fav_tasks: list of Task IDs
+
+Board Object:
+- title: string
+- description: string
+- category: string
+- permission: enum {readonly, write}
+- public: boolean
+- author_id: integer (ID of the user who created the board)
+- favored_by_ids: list of user IDs
+- member_ids: list of user IDs (IDs of members)
+- topic_ids: list of Topic IDs
+- key: string (if private)
+
+Topic Object:
+- title: string
+- description: string
+- category: string
+- parent_topic_id: integer (ID of the parent topic, if any)
+- board_id: integer (ID of the board to which the topic belongs)
+- public: boolean
+- author_id: integer (ID of the user who created the topic)
+- favored_by_ids: list of user IDs
+- content: string (Markdown format)
+- has: list of Topic IDs or Task IDs
+
+Task Object:
+- title: string
+- description: string
+- category: string
+- parent_topic_id: integer (ID of the parent topic)
+- board_id: integer (ID of the board to which the task belongs)
+- start_date: date
+- end_date: date
+- notify: boolean
+- finished: boolean
+- public: boolean
+- author_id: integer (ID of the user who created the task)
+- favored_by_ids: list of user IDs
+- content: string (Markdown format)
+- media: list of strings (URLs to images or videos)
+
+
+User API:
+  - GET: 
+      path: /users
+      description: Get a list of all users.
+  - GET: 
+      path: /users/{user_id}
+      description: Get details of a specific user.
+  - POST: 
+      path: /users
+      description: Create a new user.
+  - PUT: 
+      path: /users/{user_id}
+      description: Update user details.
+  - DELETE: 
+      path: /users/{user_id}
+      description: Delete a user.
+
+Board API:
+  - GET: 
+      path: /boards
+      description: Get a list of all boards.
+  - GET: 
+      path: /boards/{board_id}
+      description: Get details of a specific board.
+  - POST: 
+      path: /boards
+      description: Create a new board.
+  - PUT: 
+      path: /boards/{board_id}
+      description: Update board details.
+  - DELETE: 
+      path: /boards/{board_id}
+      description: Delete a board.
+  - GET: 
+      path: /boards/{board_id}/members
+      description: Get members of a board.
+  - POST: 
+      path: /boards/{board_id}/members
+      description: Add a member to a board.
+  - DELETE: 
+      path: /boards/{board_id}/members/{member_id}
+      description: Remove a member from a board.
+
+Topic API:
+  - GET: 
+      path: /topics
+      description: Get a list of all topics.
+  - GET: 
+      path: /topics/{topic_id}
+      description: Get details of a specific topic.
+  - POST: 
+      path: /topics
+      description: Create a new topic.
+  - PUT: 
+      path: /topics/{topic_id}
+      description: Update topic details.
+  - DELETE: 
+      path: /topics/{topic_id}
+      description: Delete a topic.
+  - GET: 
+      path: /topics/{topic_id}/tasks
+      description: Get tasks associated with a topic.
+
+Task API:
+  - GET: 
+      path: /tasks
+      description: Get a list of all tasks.
+  - GET: 
+      path: /tasks/{task_id}
+      description: Get details of a specific task.
+  - POST: 
+      path: /tasks
+      description: Create a new task.
+  - PUT: 
+      path: /tasks/{task_id}
+      description: Update task details.
+  - DELETE: 
+      path: /tasks/{task_id}
+      description: Delete a task.
+  - POST: 
+      path: /tasks/{task_id}/favored_by
+      description: Add a user to the list of users who favorited the task.
+  - DELETE: 
+      path: /tasks/{task_id}/favored_by/{user_id}
+      description: Remove a user from the list of users who favorited the task.
+
+Authentication API:
+  - POST: 
+      path: /auth/login
+      description: User login.
+  - POST: 
+      path: /auth/logout
+      description: User logout.
+  - POST: 
+      path: /auth/register
+      description: User registration.
+
