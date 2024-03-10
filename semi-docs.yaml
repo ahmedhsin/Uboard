@@ -13,7 +13,6 @@ Board Object:
 - title: string
 - description: string
 - category: string
-- permission: enum {readonly, write}
 - public: boolean
 - author_id: integer (ID of the user who created the board)
 - favored_by_ids: list of user IDs
@@ -30,7 +29,7 @@ Topic Object:
 - public: boolean
 - author_id: integer (ID of the user who created the topic)
 - favored_by_ids: list of user IDs
-- content: string (Markdown format)
+- content_type: string
 - has: list of Topic IDs or Task IDs
 
 Task Object:
