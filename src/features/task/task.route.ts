@@ -1,34 +1,20 @@
 import { Router } from "express";
-
+import * as taskController from './task.controller'
 const router = Router()
 
-router.get('/tasks', (req, res) => {
-    res.send('Get a list of all tasks');
-});
+router.get('/tasks', taskController.getTasksController);
 
-router.get('/tasks/:task_id', (req, res) => {
-    res.send(`Get details of task with ID ${req.params.task_id}`);
-});
+router.get('/tasks/:task_id', taskController.getTaskController);
 
-router.post('/tasks', (req, res) => {
-    res.send('Create a new task');
-});
+router.post('/tasks', taskController.createTaskController);
 
-router.put('/tasks/:task_id', (req, res) => {
-    res.send(`Update details of task with ID ${req.params.task_id}`);
-});
+router.put('/tasks/:task_id', taskController.updateTaskController);
 
 
-router.delete('/tasks/:task_id', (req, res) => {
-    res.send(`Delete task with ID ${req.params.task_id}`);
-});
+router.delete('/tasks/:task_id', taskController.deleteTaskController);
 
-router.post('/tasks/:task_id/favored_by', (req, res) => {
-    res.send(`Add a user to the list of users who favorited task with ID ${req.params.task_id}`);
-});
+router.post('/tasks/:task_id/favored_by', taskController.addFavoredUserController);
 
-router.delete('/tasks/:task_id/favored_by/:user_id', (req, res) => {
-    res.send(`Remove user ${req.params.user_id} from the list of users who favorited task with ID ${req.params.task_id}`);
-});
+router.delete('/tasks/:task_id/favored_by/:user_id', taskController.removeFavoredUserController);
 
 export default router;

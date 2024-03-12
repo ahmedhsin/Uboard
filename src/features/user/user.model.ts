@@ -20,13 +20,13 @@ const userSchema = new Schema<IUser>({
     first_name: {
         type: String,
         required: true,
-        minLength: 4,
+        minLength: 3,
         maxLength: 50
     },
     last_name: {
         type: String,
         required: true,
-        minLength: 4,
+        minLength: 3,
         maxLength: 50
     },
     password_hash: {
