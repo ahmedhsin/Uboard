@@ -35,7 +35,7 @@ export function addUpdateQuery(updateQuery: IUpdateQuery , field: string, data: 
         if (arOp.key === 'add'){
             updateQuery.$push[arOp.field]= String(arOp.value)
         }else{
-            updateQuery.$pull[field] = String(arOp.value)
+            updateQuery.$pull[arOp.field] = String(arOp.value)
         }
     }else {
         updateQuery.$set[field] = data;

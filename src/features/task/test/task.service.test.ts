@@ -9,7 +9,7 @@ import {
     addFavoredUserService,
     removeFavoredUserService
 } from '../task.service';
-import { getUserService } from '../../user/user.service';
+import { getUserService, updateUserService } from '../../user/user.service';
 import { getBoardService } from '../../board/board.service';
 import { getTopicService, updateTopicService } from '../../topic/topic.service';
 import dotenv from 'dotenv';
@@ -245,15 +245,54 @@ describe('Task Service Tests', () => {
         });
     });
 
-    describe('addFavoredUserService', () => {
-        test('should throw an error', () => {
-            expect(() => addFavoredUserService(taskId, authorId)).toThrow('Not Implemented Yet');
+    describe('add/Remove FavoredUserService',  () => {
+        let task_id: Types.ObjectId;
+        let user_id: Types.ObjectId;
+        test('should add a user to task', async () => {
+            const user = new User({
+                username: 'testuser00',
+                email: 'testuser00@example.com',
+                password_hash: '123456789',
+                first_name: 'Test',
+                last_name: 'User',
+            });
+            const savedUser = await user.save();
+            const task = await createTaskService({
+                title: 'New Task',
+                description: 'This is a new task',
+                category: 'New Category',
+                end_date: new Date(),
+                notify: true,
+                finished: false,
+                content: 'Task content',
+                author_id: authorId,
+                board_id: boardId,
+                parent_topic_id: topicId
+            })
+            user_id = savedUser._id;
+            if (task?._id === undefined) throw new Error('Task is not found');
+            task_id = task._id;
+            const result = await addFavoredUserService(task._id, savedUser._id);
+            expect(result).toBe(true);
+            const userRet = await getUserService(savedUser._id);
+            if (!userRet?.fav_tasks) throw new Error('User is not found');
+            expect(userRet.fav_tasks.includes(task._id)).toBe(true);
+            const taskRet = await getTaskService(task._id);
+            if (!taskRet?.favored_by_ids) throw new Error('Task is not found');
+            expect(taskRet.favored_by_ids.includes(savedUser._id)).toBe(true);
         });
-    });
 
-    describe('removeFavoredUserService', () => {
-        test('should throw an error', () => {
-            expect(() => removeFavoredUserService(taskId, authorId)).toThrow('Not Implemented Yet');
+        test('should remove task from fav', async () => {
+            const task = await getTaskService(task_id);
+            const savedUser = await getUserService(user_id);
+            const result = await removeFavoredUserService(task_id, user_id);
+            expect(result).toBe(true);
+            const userRet = await getUserService(user_id);
+            const taskRet = await getTaskService(task_id);
+            if (!userRet?.fav_tasks) throw new Error('User is not found');
+            if (!taskRet?.favored_by_ids) throw new Error('Task is not found');
+            expect(userRet.fav_tasks.includes(task_id)).toBe(false);
+            expect(taskRet.favored_by_ids.includes(user_id)).toBe(false);
         });
     });
 });

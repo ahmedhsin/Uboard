@@ -8,11 +8,14 @@ import {
     deleteBoardService,
     getBoardMembersService,
     addMemberToBoardService,
-    removeMemberFromBoardService
+    removeMemberFromBoardService,
+    addFavoredUserService,
+    removeFavoredUserService
 } from '../board.service';
 import estabishConnection from '../../../config/db';
 import User from '../../user/user.model';
 import dotenv from 'dotenv';
+import { getUserService } from '../../user/user.service';
 dotenv.config()
 describe('Board Service Tests', () => {
     let boardId: Types.ObjectId;
@@ -241,6 +244,50 @@ describe('Board Service Tests', () => {
 
         test('should throw an error for non-existent member', async () => {
             await expect(removeMemberFromBoardService(boardId, new Types.ObjectId())).rejects.toThrow('member is not found');
+        });
+    });
+    describe('add/Remove FavoredUserService',  () => {
+        let board_id: Types.ObjectId;
+        let user_id: Types.ObjectId;
+        test('should add a user to board fav', async () => {
+            const user = new User({
+                username: 'tes0',
+                email: 'tes00@example.com',
+                password_hash: '123456789',
+                first_name: 'Test',
+                last_name: 'User',
+            });
+            const savedUser = await user.save();
+            const board = await createBoardService({
+                title: 'New Task',
+                description: 'This is a new task',
+                category: 'New Category',
+                author_id: authorId,
+            })
+            user_id = savedUser._id;
+            if (board?._id === undefined) throw new Error('board is not found');
+            board_id = board._id;
+            const result = await addFavoredUserService(board._id, savedUser._id);
+            expect(result).toBe(true);
+            const userRet = await getUserService(savedUser._id);
+            if (!userRet?.fav_boards) throw new Error('User is not found');
+            expect(userRet.fav_boards.includes(board._id)).toBe(true);
+            const boardRet = await getBoardService(board._id);
+            if (!boardRet?.favored_by_ids) throw new Error('board is not found');
+            expect(boardRet.favored_by_ids.includes(savedUser._id)).toBe(true);
+        });
+
+        test('should remove board from fav', async () => {
+            const board = await getBoardService(board_id);
+            const savedUser = await getUserService(user_id);
+            const result = await removeFavoredUserService(board_id, user_id);
+            expect(result).toBe(true);
+            const userRet = await getUserService(user_id);
+            const boardRet = await getBoardService(board_id);
+            if (!userRet?.fav_boards) throw new Error('User is not found');
+            if (!boardRet?.favored_by_ids) throw new Error('Task is not found');
+            expect(userRet.fav_boards.includes(board_id)).toBe(false);
+            expect(boardRet.favored_by_ids.includes(user_id)).toBe(false);
         });
     });
 });

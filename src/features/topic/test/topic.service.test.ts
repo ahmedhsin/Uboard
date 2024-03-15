@@ -5,13 +5,16 @@ import {
     getTopicService,
     createTopicService,
     updateTopicService,
-    deleteTopicService
+    deleteTopicService,
+    addFavoredUserService,
+    removeFavoredUserService
 } from '../topic.service';
 import {  getBoardService } from '../../board/board.service';
 import User from '../../user/user.model';
 import Board from '../../board/board.model';
 import dotenv from 'dotenv';
 import { createTaskService } from '../../task/task.service';
+import { getUserService } from '../../user/user.service';
 dotenv.config()
 describe('Topic Service Tests', () => {
     let topicId: Types.ObjectId;
@@ -258,6 +261,52 @@ describe('Topic Service Tests', () => {
             const nonExistentTopicId = new Types.ObjectId();
             const result = await deleteTopicService(nonExistentTopicId);
             expect(result).toBe(false);
+        });
+    });
+    describe('add/Remove FavoredUserService',  () => {
+        let topic_id: Types.ObjectId;
+        let user_id: Types.ObjectId;
+        test('should add a user to topic fav', async () => {
+            const user = new User({
+                username: 'test0000',
+                email: 'testu00@example.com',
+                password_hash: '123456789',
+                first_name: 'Test',
+                last_name: 'User',
+            });
+            const savedUser = await user.save();
+            const topic = await createTopicService({
+                title: 'New Task',
+                description: 'This is a new task',
+                category: 'New Category',
+                author_id: authorId,
+                board_id: boardId,
+                parent_topic_id: null
+            })
+            user_id = savedUser._id;
+            if (topic?._id === undefined) throw new Error('topic is not found');
+            topic_id = topic._id;
+            const result = await addFavoredUserService(topic._id, savedUser._id);
+            expect(result).toBe(true);
+            const userRet = await getUserService(savedUser._id);
+            if (!userRet?.fav_topics) throw new Error('User is not found');
+            expect(userRet.fav_topics.includes(topic._id)).toBe(true);
+            const topicRet = await getTopicService(topic._id);
+            if (!topicRet?.favored_by_ids) throw new Error('topic is not found');
+            expect(topicRet.favored_by_ids.includes(savedUser._id)).toBe(true);
+        });
+
+        test('should remove topic from fav', async () => {
+            const topic = await getTopicService(topic_id);
+            const savedUser = await getUserService(user_id);
+            const result = await removeFavoredUserService(topic_id, user_id);
+            expect(result).toBe(true);
+            const userRet = await getUserService(user_id);
+            const topicRet = await getTopicService(topic_id);
+            if (!userRet?.fav_topics) throw new Error('User is not found');
+            if (!topicRet?.favored_by_ids) throw new Error('Task is not found');
+            expect(userRet.fav_topics.includes(topic_id)).toBe(false);
+            expect(topicRet.favored_by_ids.includes(user_id)).toBe(false);
         });
     });
 });
