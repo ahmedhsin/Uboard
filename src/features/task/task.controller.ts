@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 import * as taskService from './task.service'
 import { IUpdateData } from "../helpers/update.interface";
 import ITask from "./task.interface";
+import { Types } from "mongoose";
 
 
 async function getTasksController(req: Request, res: Response): Promise<void> {
@@ -16,7 +17,7 @@ async function getTasksController(req: Request, res: Response): Promise<void> {
 async function getTaskController(req: Request, res: Response): Promise<void> {
     try{
         const id = req.params.task_id
-        const task = await taskService.getTaskService(id);
+        const task = await taskService.getTaskService(new Types.ObjectId(id));
         res.json(task)
     }catch(err: any){
         res.status(404).json(err.message);
@@ -37,7 +38,7 @@ async function createTaskController(req: Request, res: Response): Promise<void> 
             end_date: reqBody.end_date
         }
         const task = await taskService.createTaskService(taskData)
-        res.sendStatus(201);
+        res.status(201).json({id: task._id});
     }catch(err: any){
         res.status(400).json(err.message);
     }
@@ -56,7 +57,7 @@ async function updateTaskController(req: Request, res: Response): Promise<void> 
             finished: reqBody.finished,
             content: reqBody.content,
         }
-        const task = await taskService.updateTaskService(task_id, data);
+        const task = await taskService.updateTaskService(new Types.ObjectId(task_id), data);
         res.sendStatus(200);
     }catch(err: any){
         res.status(400).json(err.message);

@@ -3,6 +3,7 @@ import * as topicService from './topic.service'
 import { IUpdateData } from "../helpers/update.interface";
 import Topic from "./topic.model";
 import ITopic from "./topic.interface";
+import { Types } from "mongoose";
 async function getTopicsController(req: Request, res: Response): Promise<void> {
     try{
         const topics = await topicService.getTopicsService()
@@ -15,7 +16,7 @@ async function getTopicsController(req: Request, res: Response): Promise<void> {
 async function getTopicController(req: Request, res: Response): Promise<void> {
     try{
         const id = req.params.topic_id
-        const topic = await topicService.getTopicService(id);
+        const topic = await topicService.getTopicService(new Types.ObjectId(id));
         res.json(topic)
     }catch(err: any){
         res.status(404).json(err.message);
@@ -34,7 +35,7 @@ async function createTopicController(req: Request, res: Response): Promise<void>
             parent_topic_id: reqBody.parent_topic_id
         }
         const topic = await topicService.createTopicService(topicData)
-        res.sendStatus(201);
+        res.status(201).json({id: topic._id});
     }catch(err: any){
         res.status(400).json(err.message);
     }
@@ -49,7 +50,7 @@ async function updateTopicController(req: Request, res: Response): Promise<void>
             description: reqBody.description,
             category: reqBody.category,
         }
-        const topic = await topicService.updateTopicService(topic_id, data);
+        const topic = await topicService.updateTopicService(new Types.ObjectId(topic_id), data);
         res.sendStatus(200);
     }catch(err: any){
         res.status(400).json(err.message);

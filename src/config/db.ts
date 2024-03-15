@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-export default function estabishConnection (url: string){
+export default async function estabishConnection (url: string){
     try{
-        mongoose.connect(url)
+        await mongoose.connect(url)
     }catch(err){
         console.error("error happend when start a db connection")
         process.exit(1)

@@ -3,18 +3,18 @@ import IBoard from "./board.interface";
 import Board from './board.model'
 import { getUserService, updateUserService } from "../user/user.service";
 import bcrypt from 'bcrypt'
-import { IUpdateData, IUpdateQuery, addUpdateQuery } from "../helpers/update.interface";
+import { IUpdateData, IUpdateQuery, addUpdateQuery, createUpdateQuery } from "../helpers/update.interface";
 async function getBoardsService(): Promise<IBoard[]> {
     return await Board.find().select('-key').exec();
 }
 
-async function getBoardService(boardId: string): Promise<IBoard | null> {
+async function getBoardService(boardId: Types.ObjectId): Promise<IBoard | null> {
     return await Board.findById(boardId).select('-key').exec();
 }
 
 async function createBoardService(boardData: IBoard): Promise<IBoard> {
     const authorId = boardData.author_id
-    const user = await getUserService(String(authorId))
+    const user = await getUserService(authorId)
     if (!user) throw new Error("author id is not related to a user")
     if (boardData.key){
         const salt = await bcrypt.genSalt();
@@ -23,7 +23,7 @@ async function createBoardService(boardData: IBoard): Promise<IBoard> {
     }
     const board = new Board(boardData)
     const boardObj = await board.save();
-    updateUserService(String(authorId), {
+    updateUserService(authorId, {
         array_operation: {
             field: "boards",
             key: "add",
@@ -33,43 +33,31 @@ async function createBoardService(boardData: IBoard): Promise<IBoard> {
     return boardObj
 }
 
-async function updateBoardService(boardId: string, updatedData: IUpdateData): Promise<IBoard | null> {
+async function updateBoardService(boardId: Types.ObjectId, updatedData: IUpdateData): Promise<IBoard | null> {
     const board = await getBoardService(boardId)
     if (!board) throw new Error("board is not found")
-    const updateQuery: IUpdateQuery = {
-        $set: {},
-        $pull: {},
-        $push:{}
-    }
-    // todo make it generic and secure
-    if (updatedData.title)
-        addUpdateQuery(updateQuery, 'title', updatedData.title)
-    if (updatedData.description)
-        addUpdateQuery(updateQuery, 'description', updatedData.description)
-    if (updatedData.category)
-        addUpdateQuery(updateQuery, 'category', updatedData.category)
-    if (updatedData.public)
-        addUpdateQuery(updateQuery, 'public', updatedData.public)
-    if (updatedData.array_operation)
-        addUpdateQuery(updateQuery, 'array_operation', updatedData.array_operation)
+    const dataCols = ['title', 'description', 'category', 'public', 'array_operation']
+    const updateQuery = createUpdateQuery(updatedData, dataCols);
+    
     const updatedBoard = await Board.findOneAndUpdate(
     { _id: boardId }, updateQuery, { new: true }).select('-key').exec();
     return updatedBoard
 }
 
-function deleteBoardService(boardId: Types.ObjectId): void {
-    throw Error("Not Implemented Yet");
+async function deleteBoardService(boardId: Types.ObjectId): Promise<boolean> {
+    const result = await Board.deleteOne({_id: boardId}).exec();
+    return result.deletedCount !== undefined && result.deletedCount > 0;
 }
 
-async function getBoardMembersService(boardId: string): Promise<Types.ObjectId[] | undefined> {
-    const members = await Board.findById(boardId).select('member_ids').exec();
-    if(!members) throw new Error("board is not found")
-    return members.member_ids 
+async function getBoardMembersService(boardId: Types.ObjectId): Promise<Types.ObjectId[] | undefined> {
+    const board = await Board.findById(boardId)
+    if(!board) throw new Error("board is not found")
+    return board.member_ids 
 }
 
-async function addMemberToBoardService(boardId: string, memberId: string): Promise<IBoard | null> {
-    const board = getBoardService(boardId);
-    const user = getUserService(memberId)
+async function addMemberToBoardService(boardId: Types.ObjectId, memberId: Types.ObjectId): Promise<IBoard | null> {
+    const board = await getBoardService(boardId);
+    const user = await getUserService(memberId)
     if (!board) throw new Error("board is not found")
     if (!user) throw new Error("member is not found")
     const updatedBoard = await Board.findOneAndUpdate(
@@ -80,9 +68,9 @@ async function addMemberToBoardService(boardId: string, memberId: string): Promi
     return updatedBoard
 }
 
-async function removeMemberFromBoardService(boardId: string, memberId: string): Promise<IBoard | null> {
-    const board = getBoardService(boardId);
-    const user = getUserService(memberId)
+async function removeMemberFromBoardService(boardId: Types.ObjectId, memberId: Types.ObjectId): Promise<IBoard | null> {
+    const board = await getBoardService(boardId);
+    const user = await getUserService(memberId)
     if (!board) throw new Error("board is not found")
     if (!user) throw new Error("member is not found")
     const updatedBoard = await Board.findOneAndUpdate(
