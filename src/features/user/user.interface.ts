@@ -9,5 +9,6 @@ interface IUser{
     fav_boards?: Types.ObjectId[]
     fav_topics?: Types.ObjectId[]
     fav_tasks?: Types.ObjectId[]
+    _id?: Types.ObjectId
 }
 export default IUser;

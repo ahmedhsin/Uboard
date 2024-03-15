@@ -1,6 +1,8 @@
 import { Schema, model } from 'mongoose';
 import IUser from './user.interface';
-
+import Board from '../board/board.model';
+import Topic from '../topic/topic.model';
+import Task from '../task/task.model';
 const userSchema = new Schema<IUser>({
     username: {
         type: String,
@@ -40,6 +42,18 @@ const userSchema = new Schema<IUser>({
     fav_topics: [{ type: Schema.Types.ObjectId, ref: 'Topic' }],
     fav_tasks: [{ type: Schema.Types.ObjectId, ref: 'Task' }],
 });
+
+userSchema.pre('deleteOne', async function(next) {
+    try{
+        const document = this.getQuery();
+        const user: IUser | null = await User.findById(document._id).exec();
+        if (user === null) return;
+        await Board.deleteMany({ _id: { $in: user.boards } });
+    }catch(error: any){
+        next(error)
+    }
+});
+
 
 const User = model<IUser>('User', userSchema);
 

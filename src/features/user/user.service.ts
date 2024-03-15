@@ -2,12 +2,12 @@ import { Types, UpdateQuery } from "mongoose";
 import IUser from "./user.interface";
 import User from "./user.model";
 import bcrypt from 'bcrypt'
-import {IUpdateData, addUpdateQuery, IUpdateQuery } from "../helpers/update.interface";
+import {IUpdateData, addUpdateQuery, IUpdateQuery, createUpdateQuery } from "../helpers/update.interface";
 async function getUsersService(): Promise<IUser[]> {
     return await User.find().select('-password_hash').exec();
 }
 
-async function getUserService(userId: string): Promise<IUser | null> {
+async function getUserService(userId: Types.ObjectId): Promise<IUser | null> {
     return await User.findById(userId).select('-password_hash').exec();
 }
 
@@ -20,32 +20,21 @@ async function createUserService(userData: IUser): Promise<IUser> {
     return returnedUser;
 }
 
-async function updateUserService(userId: string, updatedData: IUpdateData): Promise<IUser | null>{
+async function updateUserService(userId: Types.ObjectId, updatedData: IUpdateData): Promise<IUser | null>{
     const user = await getUserService(userId)
     if (!user) throw new Error("user is not found")
-    const updateQuery: IUpdateQuery = {
-        $set: {},
-        $pull: {},
-        $push:{}
-    }
+    
     // todo make it generic and secure
-    if (updatedData.username)
-        addUpdateQuery(updateQuery, 'username', updatedData.username)
-    if (updatedData.email)
-        addUpdateQuery(updateQuery, 'email', updatedData.email)
-    if (updatedData.first_name)
-        addUpdateQuery(updateQuery, 'first_name', updatedData.first_name)
-    if (updatedData.last_name)
-        addUpdateQuery(updateQuery, 'last_name', updatedData.last_name)
-    if (updatedData.array_operation)
-        addUpdateQuery(updateQuery, 'array_operation', updatedData.array_operation)
+    const dataCols = ['username', 'email', 'first_name', 'last_name', 'array_operation']
+    const updateQuery = createUpdateQuery(updatedData, dataCols);
     const updatedUser = await User.findOneAndUpdate(
     { _id: userId }, updateQuery, { new: true }).select('-hash_password').exec();
     return updatedUser
 }
 
-function deleteUserService(userId: Types.ObjectId): Boolean{
-    throw Error("Not Implemented Yet")
+async function deleteUserService(userId: Types.ObjectId): Promise<boolean>{
+    const result = await User.deleteOne({_id: userId}).exec();
+    return result.deletedCount !== undefined && result.deletedCount > 0;
 }
 
 export {
@@ -55,3 +44,4 @@ export {
     deleteUserService,
     createUserService
 }
+

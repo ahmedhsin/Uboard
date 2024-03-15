@@ -1,6 +1,9 @@
 import { Schema, model } from 'mongoose';
 import IBoard from './board.interface';
 import crypto from 'crypto'
+import User from '../user/user.model';
+import Topic from '../topic/topic.model';
+import { updateBoardService } from './board.service';
 const boardSchema = new Schema<IBoard>({
     title: {
         type: String,
@@ -30,6 +33,27 @@ const boardSchema = new Schema<IBoard>({
         type: String,
         default: crypto.randomBytes(16).toString("hex"),
         immutable: true
+    }
+});
+
+
+boardSchema.pre(['deleteMany', 'deleteOne'], async function(next) {
+    try {
+        const document = this.getQuery();
+        const board: IBoard | null = await Board.findById(document._id).exec();
+        if (board === null) return;
+        await Topic.deleteMany({ _id: { $in: board.topic_ids } });
+        await User.updateMany(
+            { _id: { $in: board.member_ids } },
+            { $pull: { boards: board._id } }
+        );
+        await User.updateMany(
+            { _id: { $in: board.favored_by_ids } },
+            { $pull: { fav_boards: board._id } }
+        );
+
+    } catch (error: any) {
+        next(error);
     }
 });
 

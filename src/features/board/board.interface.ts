@@ -9,5 +9,6 @@ interface IBoard{
     member_ids?: Types.ObjectId[]
     topic_ids?: Types.ObjectId[]
     key?: string
+    _id?: Types.ObjectId
 }
 export default IBoard;

@@ -11,6 +11,7 @@ export interface IUpdateQuery{
     $push: any
 }
 export interface IUpdateData{
+    [key: string]: dataType
     array_operation?: IArrayOp
     username?: string
     email?: string
@@ -27,7 +28,7 @@ export interface IUpdateData{
     finished?: boolean
     content?: string
 }
-type dataType = IArrayOp | string | Date | boolean
+type dataType = IArrayOp | string | Date | boolean | undefined
 export function addUpdateQuery(updateQuery: IUpdateQuery , field: string, data: dataType): void{
     if (typeof data === 'object' && field === 'array_operation'){
         const arOp: IArrayOp = <IArrayOp>data 
@@ -39,4 +40,20 @@ export function addUpdateQuery(updateQuery: IUpdateQuery , field: string, data: 
     }else {
         updateQuery.$set[field] = data;
     }
+}
+
+export function createUpdateQuery(updatedData: IUpdateData, dataCols: string[]): IUpdateQuery {
+    const updateQuery: IUpdateQuery = {
+        $set: {},
+        $pull: {},
+        $push:{}
+    }
+    dataCols.forEach((col) => {
+        try{
+            addUpdateQuery(updateQuery, col, updatedData[col])
+        }catch{
+            // do nothing
+        }
+    })
+    return updateQuery;
 }
