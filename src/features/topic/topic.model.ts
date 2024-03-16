@@ -3,6 +3,7 @@ import ITopic from './topic.interface';
 import User from '../user/user.model';
 import Task from '../task/task.model';
 import Board from '../board/board.model';
+import { getTopicService } from './topic.service';
 
 const contentTypeEnum = ["Topic", "Task"] as const
 const topicSchema = new Schema<ITopic>({
@@ -36,6 +37,7 @@ topicSchema.pre(['deleteOne', 'deleteMany'], async function(next) {
         const document = this.getQuery();
         const topic: ITopic | null = await Topic.findById(document._id).exec();
         if (topic === null) return;
+        
         if (topic.content_type === 'Topic')
             await Topic.deleteMany({ _id: { $in: topic.has } });
         else
@@ -54,6 +56,16 @@ topicSchema.pre(['deleteOne', 'deleteMany'], async function(next) {
                 { _id: topic.parent_topic_id },
                 { $pull: { has: topic._id } }
             );
+        }
+        if (topic.parent_topic_id){
+            const RetrievedTopic = await getTopicService(topic.parent_topic_id);
+            const hasLength = RetrievedTopic?.has?.length;
+            if (hasLength == 0){
+                await Topic.updateMany(
+                    { _id: topic.parent_topic_id },
+                    { $set: {content_type: null} }
+                );
+            }
         }
     }catch(error: any){
         next(error)

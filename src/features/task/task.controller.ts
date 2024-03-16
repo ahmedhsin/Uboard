@@ -64,18 +64,38 @@ async function updateTaskController(req: Request, res: Response): Promise<void> 
     }
 }
 
-function deleteTaskController(req: Request, res: Response): void {
-    throw Error("Not Implemented Yet")
+async function deleteTaskController(req: Request, res: Response): Promise<void> {
+    const taskId = new Types.ObjectId(req.params.task_id);
+    try{
+        const val = await taskService.deleteTaskService(taskId);
+        if (val)
+            res.sendStatus(204);
+        else
+            res.sendStatus(404);
+    }catch(error: any){
+        res.status(400).json(error.message);
+    }
 }
 
 function addFavoredUserController(req: Request, res: Response): void {
-    throw Error("Not Implemented Yet")
+    try{
+        const {task_id} = req.params;
+        const {userId} = req.body;
+        taskService.addFavoredUserService(new Types.ObjectId(task_id), new Types.ObjectId(userId));
+        res.sendStatus(204);
+    }catch(err: any){
+        res.status(400).json(err.message);
+    }
 }
-
-function removeFavoredUserController(req: Request, res: Response): void {
-    throw Error("Not Implemented Yet")
+function removeFavoredUserController(req: Request, res: Response): void{
+    try{
+        const {task_id, user_id} = req.params;
+        taskService.removeFavoredUserService(new Types.ObjectId(task_id), new Types.ObjectId(user_id));
+        res.sendStatus(204);
+    }catch(err: any){
+        res.status(400).json(err.message);
+    }
 }
-
 export {
     getTasksController,
     getTaskController,

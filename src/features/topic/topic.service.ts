@@ -36,7 +36,7 @@ async function createTopicService(topicData: ITopic): Promise<ITopic> {
         if (!parentTopic) throw new Error("parent topic is not found")
         if (parentTopic.content_type === 'Task')
             throw new Error("parent content Type is Task not Topic")
-        if (!parentTopic.content_type){
+        if (!parentTopic.content_type || parentTopic.content_type === 'Topic'){
             await updateTopicService(topicData.parent_topic_id, {
                 array_operation: {
                     field: "has",

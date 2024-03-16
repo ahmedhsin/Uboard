@@ -57,10 +57,38 @@ async function updateTopicController(req: Request, res: Response): Promise<void>
     }
 }
 
-function deleteTopicController(req: Request, res: Response): void {
-    throw Error("Not Implemented Yet")
+async function deleteTopicController(req: Request, res: Response): Promise<void> {
+    const topicId = new Types.ObjectId(req.params.topic);
+    try{
+        const val = await topicService.deleteTopicService(topicId);
+        if (val)
+            res.sendStatus(204);
+        else
+            res.sendStatus(404);
+    }catch(error: any){
+        res.status(400).json(error.message);
+    }
 }
 
+function addFavoredUserController(req: Request, res: Response): void {
+    try{
+        const {topic_id} = req.params;
+        const {userId} = req.body;
+        topicService.addFavoredUserService(new Types.ObjectId(topic_id), new Types.ObjectId(userId));
+        res.sendStatus(204);
+    }catch(err: any){
+        res.status(400).json(err.message);
+    }
+}
+function removeFavoredUserController(req: Request, res: Response): void{
+    try{
+        const {topic_id, user_id} = req.params;
+        topicService.removeFavoredUserService(new Types.ObjectId(topic_id), new Types.ObjectId(user_id));
+        res.sendStatus(204);
+    }catch(err: any){
+        res.status(400).json(err.message);
+    }
+}
 
 export {
     getTopicsController,
@@ -68,4 +96,8 @@ export {
     createTopicController,
     updateTopicController,
     deleteTopicController,
+    addFavoredUserController,
+    removeFavoredUserController
 }
+
+

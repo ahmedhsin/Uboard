@@ -9,12 +9,12 @@ import {
     addFavoredUserService,
     removeFavoredUserService
 } from '../topic.service';
-import {  getBoardService } from '../../board/board.service';
+import {  createBoardService, getBoardService } from '../../board/board.service';
 import User from '../../user/user.model';
 import Board from '../../board/board.model';
 import dotenv from 'dotenv';
-import { createTaskService } from '../../task/task.service';
-import { getUserService } from '../../user/user.service';
+import { createTaskService, deleteTaskService } from '../../task/task.service';
+import { createUserService, getUserService } from '../../user/user.service';
 dotenv.config()
 describe('Topic Service Tests', () => {
     let topicId: Types.ObjectId;
@@ -309,4 +309,136 @@ describe('Topic Service Tests', () => {
             expect(topicRet.favored_by_ids.includes(user_id)).toBe(false);
         });
     });
+    describe("relation with tasks", () => {
+        let user_id: Types.ObjectId;
+        let board_id: Types.ObjectId;
+        let topic_id: Types.ObjectId;
+        let parent_topic_id: Types.ObjectId;
+        let task_id: Types.ObjectId;
+        test("should add task to topic", async () => {
+            const user = await createUserService({
+                username: 't000',
+                email: 'blabla@gmail.com',
+                password_hash: '123456789',
+                first_name: 'Test',
+                last_name: 'User',
+            })
+            user_id = user?._id ?? new Types.ObjectId();
+            const board = await createBoardService({
+                title: 'New Board',
+                author_id: user_id,
+            })
+            if (board === null) throw new Error('board is not created');
+            board_id = board?._id ?? new Types.ObjectId();
+            const topic = await createTopicService({
+                title: 'New topic',
+                description: 'This is a new topic',
+                category: 'New Category',
+                author_id: user_id,
+                board_id: board_id,
+                parent_topic_id: null
+            })
+            if (topic === null) throw new Error('topic is not created');
+            topic_id = topic?._id ?? new Types.ObjectId();
+            const task = await createTaskService({
+                title: 'New Task',
+                description: 'This is a new task',
+                category: 'New Category',
+                author_id: user_id,
+                board_id: board_id,
+                parent_topic_id: topic_id
+            })
+            task_id = task?._id ?? new Types.ObjectId();
+            const topicRet = await getTopicService(topic_id);
+            expect(topicRet?.has?.includes(task_id)).toBe(true);
+        })
+        test("should remove task from topic when it deleted", async () => {
+            const result = await deleteTaskService(task_id);
+            expect(result).toBe(true);
+            const topicRet = await getTopicService(topic_id);
+            expect(topicRet?.has?.includes(task_id)).toBe(false);
+        })
+        test("when remove a task the contentype change if there not tasks", async () => {
+            const task1 = await createTaskService({
+                title: 'New Task',
+                description: 'This is a new task',
+                category: 'New Category',
+                author_id: user_id,
+                board_id: board_id,
+                parent_topic_id: topic_id
+            })
+            const task2 = await createTaskService({
+                title: 'New Task',
+                description: 'This is a new task',
+                category: 'New Category',
+                author_id: user_id,
+                board_id: board_id,
+                parent_topic_id: topic_id
+            })
+            const task1_id = task1?._id ?? new Types.ObjectId();
+            const task2_id = task2?._id ?? new Types.ObjectId();
+            const topicRet = await getTopicService(topic_id);
+            expect(topicRet?.has?.includes(task1_id)).toBe(true);
+            expect(topicRet?.has?.includes(task2_id)).toBe(true);
+            expect(topicRet?.content_type).toBe('Task');
+            const result = await deleteTaskService(task1_id);
+            expect(result).toBe(true);
+            const topicRet2 = await getTopicService(topic_id);
+            expect(topicRet2?.has?.includes(task1_id)).toBe(false);
+            expect(topicRet2?.has?.includes(task2_id)).toBe(true);
+            expect(topicRet2?.content_type).toBe('Task');
+            const result2 = await deleteTaskService(task2_id);
+            expect(result2).toBe(true);
+            const topicRet3 = await getTopicService(topic_id);
+            expect(topicRet3?.has?.includes(task1_id)).toBe(false);
+            expect(topicRet3?.has?.includes(task2_id)).toBe(false);
+            expect(topicRet3?.content_type).toBe(null);
+        })
+        test("should remove topic from parent topic when it deleted", async () => {
+            const parentTopic = await createTopicService({
+                title: 'New topic',
+                description: 'This is a new topic',
+                category: 'New Category',
+                author_id: user_id,
+                board_id: board_id,
+                parent_topic_id: null
+            })
+            parent_topic_id = parentTopic?._id ?? new Types.ObjectId();
+            const topic = await createTopicService({
+                title: 'New topic 1',
+                description: 'This is a new topic',
+                category: 'New Category',
+                author_id: user_id,
+                board_id: board_id,
+                parent_topic_id: parent_topic_id
+            })
+            const topic2 = await createTopicService({
+                title: 'New topic 2',
+                description: 'This is a new topic',
+                category: 'New Category',
+                author_id: user_id,
+                board_id: board_id,
+                parent_topic_id: parent_topic_id
+            })
+            const parentTopicRet = await getTopicService(parent_topic_id);
+            if (parentTopicRet === null) throw new Error('parent topic is not found');
+            expect(parentTopicRet.has?.includes(topic._id ?? new Types.ObjectId())).toBe(true);
+            expect(parentTopicRet.has?.includes(topic2._id ?? new Types.ObjectId())).toBe(true);
+            expect(parentTopicRet.content_type).toBe('Topic');
+            const result1 = await deleteTopicService(topic._id ?? new Types.ObjectId());
+            const result2 = await deleteTopicService(topic2._id ?? new Types.ObjectId());
+            expect(result1).toBe(true);
+            expect(result2).toBe(true);
+            const parentTopicRet2 = await getTopicService(parent_topic_id);
+            if (parentTopicRet2 === null) throw new Error('parent topic is not found');
+            expect(parentTopicRet2.has?.includes(topic._id ?? new Types.ObjectId())).toBe(false);
+            expect(parentTopicRet2.has?.includes(topic2._id ?? new Types.ObjectId())).toBe(false);
+            expect(parentTopicRet2.content_type).toBe(null);
+
+            const result = await deleteTopicService(parent_topic_id);
+            expect(result).toBe(true);
+            const topicRet = await getTopicService(topic_id);
+            expect(topicRet?.parent_topic_id).toBe(null);
+        })
+    })
 });

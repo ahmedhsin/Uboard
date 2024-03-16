@@ -57,11 +57,14 @@ async function updateBoardController(req: Request, res: Response): Promise<void>
     }
 }
 
-function deleteBoardController(req: Request, res: Response): void {
+async function deleteBoardController(req: Request, res: Response): Promise<void> {
     const boardId = new Types.ObjectId(req.params.board_id);
     try{
-        boardService.deleteBoardService(boardId);
-        res.sendStatus(204);
+        const val = await boardService.deleteBoardService(boardId);
+        if (val)
+            res.sendStatus(204);
+        else
+            res.sendStatus(404);
     }catch(error: any){
         res.status(400).json(error.message);
     }
@@ -99,6 +102,27 @@ async function removeMemberFromBoardController(req: Request, res: Response): Pro
     }
 }
 
+function addFavoredUserController(req: Request, res: Response): void {
+    try{
+        const {board_id} = req.params;
+        const {userId} = req.body;
+        boardService.addFavoredUserService(new Types.ObjectId(board_id), new Types.ObjectId(userId));
+        res.sendStatus(204);
+    }catch(err: any){
+        res.status(400).json(err.message);
+    }
+}
+function removeFavoredUserController(req: Request, res: Response): void{
+    try{
+        const {board_id, user_id} = req.params;
+        boardService.removeFavoredUserService(new Types.ObjectId(board_id), new Types.ObjectId(user_id));
+        res.sendStatus(204);
+    }catch(err: any){
+        res.status(400).json(err.message);
+    }
+}
+
+
 export {
     getBoardsController,
     getBoardController,
@@ -107,5 +131,7 @@ export {
     deleteBoardController,
     getBoardMembersController,
     addMemberToBoardController,
-    removeMemberFromBoardController
+    removeMemberFromBoardController,
+    addFavoredUserController,
+    removeFavoredUserController
 }
