@@ -58,7 +58,7 @@ async function updateTaskController(req: Request, res: Response): Promise<void> 
             content: reqBody.content,
         }
         const task = await taskService.updateTaskService(new Types.ObjectId(task_id), data);
-        res.sendStatus(200);
+        res.sendStatus(204);
     }catch(err: any){
         res.status(400).json(err.message);
     }

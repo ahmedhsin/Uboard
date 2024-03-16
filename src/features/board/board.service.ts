@@ -65,6 +65,13 @@ async function addMemberToBoardService(boardId: Types.ObjectId, memberId: Types.
         { $push: { member_ids: memberId } },
         { new: true }
     ).select('-key').exec();
+    const updateUser = await updateUserService(memberId, {
+        array_operation: {
+            field: "boards",
+            key: "add",
+            value: boardId
+        }
+    })
     return updatedBoard
 }
 
@@ -78,6 +85,13 @@ async function removeMemberFromBoardService(boardId: Types.ObjectId, memberId: T
         { $pull: { member_ids: memberId } },
         { new: true }
     ).select('-key').exec();
+    const updateUser = await updateUserService(memberId, {
+        array_operation: {
+            field: "boards",
+            key: "remove",
+            value: boardId
+        }
+    })
     return updatedBoard
 }
 

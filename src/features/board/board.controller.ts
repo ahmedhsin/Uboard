@@ -51,7 +51,7 @@ async function updateBoardController(req: Request, res: Response): Promise<void>
             public: reqBody.public,
         }
         const board = await boardService.updateBoardService(new Types.ObjectId(board_id), data);
-        res.sendStatus(200);
+        res.sendStatus(204);
     }catch(err: any){
         res.status(400).json(err.message);
     }

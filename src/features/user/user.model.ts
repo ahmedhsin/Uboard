@@ -9,7 +9,7 @@ const userSchema = new Schema<IUser>({
         lowercase: true,
         required: true,
         unique: true,
-        minLength: 4,
+        minLength: 3,
         maxLength: 15
     },
     email: {
