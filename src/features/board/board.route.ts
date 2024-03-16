@@ -24,4 +24,8 @@ router.post('/boards/:board_id/members', boardController.addMemberToBoardControl
 
 router.delete('/boards/:board_id/members/:member_id', boardController.removeMemberFromBoardController);
 
+router.post('/boards/:board_id/favored_by', boardController.addFavoredUserController);
+
+router.delete('/boards/:board_id/favored_by/:user_id', boardController.removeFavoredUserController);
+
 export default router;

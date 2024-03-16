@@ -81,6 +81,50 @@ async function removeMemberFromBoardService(boardId: Types.ObjectId, memberId: T
     return updatedBoard
 }
 
+async function addFavoredUserService(boardId: Types.ObjectId, userId: Types.ObjectId): Promise<boolean> {
+    const user = await getUserService(userId);
+    const board = await getBoardService(boardId);
+    if (!board) throw new Error("board is not found")
+    if (!user) throw new Error("author id is not related to a user")
+    await updateBoardService(boardId, {
+        array_operation: {
+            field: "favored_by_ids",
+            key: "add",
+            value: userId
+        }
+    })
+    await updateUserService(userId, {
+        array_operation: {
+            field: "fav_boards",
+            key: "add",
+            value: boardId
+        }
+    })
+    return true;
+}
+
+async function removeFavoredUserService(boardId: Types.ObjectId, userId: Types.ObjectId): Promise<boolean> {
+    const user = await getUserService(userId);
+    const board = await getBoardService(boardId);
+    if (!board) throw new Error("board is not found")
+    if (!user) throw new Error("author id is not related to a user")
+    await updateBoardService(boardId, {
+        array_operation: {
+            field: "favored_by_ids",
+            key: "remove",
+            value: userId
+        }
+    })
+    await updateUserService(userId, {
+        array_operation: {
+            field: "fav_boards",
+            key: "remove",
+            value: boardId
+        }
+    })
+    return true;
+}
+
 export {
     getBoardsService,
     getBoardService,
@@ -89,5 +133,7 @@ export {
     deleteBoardService,
     getBoardMembersService,
     addMemberToBoardService,
-    removeMemberFromBoardService
+    removeMemberFromBoardService,
+    addFavoredUserService,
+    removeFavoredUserService
 };

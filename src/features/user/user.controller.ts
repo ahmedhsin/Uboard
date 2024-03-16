@@ -61,7 +61,7 @@ async function deleteUserController(req: Request, res: Response): Promise<void>{
     try{
         const isDeleted = await userService.deleteUserService(new Types.ObjectId(req.params.user_id));
         if (isDeleted){
-            res.sendStatus(200);
+            res.sendStatus(204);
         }else{
             res.sendStatus(404);
         }

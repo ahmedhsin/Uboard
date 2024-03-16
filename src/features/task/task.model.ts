@@ -36,14 +36,23 @@ taskSchema.pre(['deleteOne', 'deleteMany'], async function(next) {
         const document = this.getQuery();
         const task: ITask | null = await Task.findById(document._id).exec();
         if (task === null) return;
-        Topic.updateMany(
+        await Topic.updateMany(
             { _id: task.parent_topic_id },
             { $pull: { has: task._id } }
         );
-        User.updateMany(
+        await User.updateMany(
             { _id: { $in: task.favored_by_ids } },
             { $pull: { fav_tasks: task._id } }
         );
+        const parentTopic = await Topic.findById(task.parent_topic_id);
+        if (parentTopic === null) return;
+        const hasLength = parentTopic.has?.length;
+        if (hasLength == 0){
+            await Topic.findByIdAndUpdate(
+                { _id: task.parent_topic_id },
+                { $set: { content_type: null } }
+            );
+        }
     }catch(error: any){
         next(error)
     }

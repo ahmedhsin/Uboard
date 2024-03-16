@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import ITopic from "./topic.interface";
 import Topic from "./topic.model";
-import { getUserService } from "../user/user.service";
+import { getUserService, updateUserService } from "../user/user.service";
 import { getBoardService, updateBoardService } from "../board/board.service";
 import Board from "../board/board.model";
 import { IUpdateData, IUpdateQuery, addUpdateQuery, createUpdateQuery } from "../helpers/update.interface";
@@ -36,7 +36,7 @@ async function createTopicService(topicData: ITopic): Promise<ITopic> {
         if (!parentTopic) throw new Error("parent topic is not found")
         if (parentTopic.content_type === 'Task')
             throw new Error("parent content Type is Task not Topic")
-        if (!parentTopic.content_type){
+        if (!parentTopic.content_type || parentTopic.content_type === 'Topic'){
             await updateTopicService(topicData.parent_topic_id, {
                 array_operation: {
                     field: "has",
@@ -67,11 +67,56 @@ async function deleteTopicService(topicId: Types.ObjectId): Promise<boolean> {
     return result.deletedCount !== undefined && result.deletedCount > 0;
 }
 
+async function addFavoredUserService(topicId: Types.ObjectId, userId: Types.ObjectId): Promise<boolean> {
+    const user = await getUserService(userId);
+    const topic = await getTopicService(topicId);
+    if (!topic) throw new Error("topic is not found")
+    if (!user) throw new Error("author id is not related to a user")
+    await updateTopicService(topicId, {
+        array_operation: {
+            field: "favored_by_ids",
+            key: "add",
+            value: userId
+        }
+    })
+    await updateUserService(userId, {
+        array_operation: {
+            field: "fav_topics",
+            key: "add",
+            value: topicId
+        }
+    })
+    return true;
+}
+
+async function removeFavoredUserService(topicId: Types.ObjectId, userId: Types.ObjectId): Promise<boolean> {
+    const user = await getUserService(userId);
+    const topic = await getTopicService(topicId);
+    if (!topic) throw new Error("topic is not found")
+    if (!user) throw new Error("author id is not related to a user")
+    await updateTopicService(topicId, {
+        array_operation: {
+            field: "favored_by_ids",
+            key: "remove",
+            value: userId
+        }
+    })
+    await updateUserService(userId, {
+        array_operation: {
+            field: "fav_topics",
+            key: "remove",
+            value: topicId
+        }
+    })
+    return true;
+}
 
 export {
     getTopicsService,
     getTopicService,
     createTopicService,
     updateTopicService,
-    deleteTopicService
+    deleteTopicService,
+    addFavoredUserService,
+    removeFavoredUserService
 }

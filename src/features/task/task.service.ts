@@ -3,7 +3,7 @@ import ITask from "./task.interface";
 import Task from './task.model'
 import { IUpdateData, IUpdateQuery, addUpdateQuery, createUpdateQuery } from "../helpers/update.interface";
 import { getBoardService } from "../board/board.service";
-import { getUserService } from "../user/user.service";
+import { getUserService, updateUserService } from "../user/user.service";
 import { getTopicService, updateTopicService } from "../topic/topic.service";
 
 async function getTasksService(): Promise<ITask[]> {
@@ -53,12 +53,48 @@ async function deleteTaskService(taskId: Types.ObjectId): Promise<boolean> {
     return result.deletedCount !== undefined && result.deletedCount > 0;
 }
 
-function addFavoredUserService(taskId: Types.ObjectId, userId: Types.ObjectId): boolean {
-    throw Error("Not Implemented Yet")
+async function addFavoredUserService(taskId: Types.ObjectId, userId: Types.ObjectId): Promise<boolean> {
+    const user = await getUserService(userId);
+    const task = await getTaskService(taskId);
+    if (!task) throw new Error("task is not found")
+    if (!user) throw new Error("author id is not related to a user")
+    await updateTaskService(taskId, {
+        array_operation: {
+            field: "favored_by_ids",
+            key: "add",
+            value: userId
+        }
+    })
+    await updateUserService(userId, {
+        array_operation: {
+            field: "fav_tasks",
+            key: "add",
+            value: taskId
+        }
+    })
+    return true;
 }
 
-function removeFavoredUserService(taskId: Types.ObjectId, userId: Types.ObjectId): boolean {
-    throw Error("Not Implemented Yet")
+async function removeFavoredUserService(taskId: Types.ObjectId, userId: Types.ObjectId): Promise<boolean> {
+    const user = await getUserService(userId);
+    const task = await getTaskService(taskId);
+    if (!task) throw new Error("task is not found")
+    if (!user) throw new Error("author id is not related to a user")
+    await updateTaskService(taskId, {
+        array_operation: {
+            field: "favored_by_ids",
+            key: "remove",
+            value: userId
+        }
+    })
+    await updateUserService(userId, {
+        array_operation: {
+            field: "fav_tasks",
+            key: "remove",
+            value: taskId
+        }
+    })
+    return true;
 }
 
 export {
