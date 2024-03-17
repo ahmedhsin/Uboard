@@ -3,13 +3,14 @@ import IBoard from "./board.interface";
 import Board from './board.model'
 import { getUserService, updateUserService } from "../user/user.service";
 import bcrypt from 'bcrypt'
-import { IUpdateData, IUpdateQuery, addUpdateQuery, createUpdateQuery } from "../helpers/update.interface";
+import { IUpdateData, IUpdateQuery, addUpdateQuery, createUpdateQuery } from "../utils/update.interface";
+
 async function getBoardsService(): Promise<IBoard[]> {
     return await Board.find().select('-key').exec();
 }
 
 async function getBoardService(boardId: Types.ObjectId): Promise<IBoard | null> {
-    return await Board.findById(boardId).select('-key').exec();
+    return await Board.findById(boardId);
 }
 
 async function createBoardService(boardData: IBoard): Promise<IBoard> {
@@ -65,6 +66,13 @@ async function addMemberToBoardService(boardId: Types.ObjectId, memberId: Types.
         { $push: { member_ids: memberId } },
         { new: true }
     ).select('-key').exec();
+    const updateUser = await updateUserService(memberId, {
+        array_operation: {
+            field: "boards",
+            key: "add",
+            value: boardId
+        }
+    })
     return updatedBoard
 }
 
@@ -78,6 +86,13 @@ async function removeMemberFromBoardService(boardId: Types.ObjectId, memberId: T
         { $pull: { member_ids: memberId } },
         { new: true }
     ).select('-key').exec();
+    const updateUser = await updateUserService(memberId, {
+        array_operation: {
+            field: "boards",
+            key: "remove",
+            value: boardId
+        }
+    })
     return updatedBoard
 }
 
@@ -125,6 +140,8 @@ async function removeFavoredUserService(boardId: Types.ObjectId, userId: Types.O
     return true;
 }
 
+
+
 export {
     getBoardsService,
     getBoardService,
@@ -137,3 +154,4 @@ export {
     addFavoredUserService,
     removeFavoredUserService
 };
+

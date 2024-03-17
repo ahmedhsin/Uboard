@@ -51,6 +51,10 @@ boardSchema.pre(['deleteMany', 'deleteOne'], async function(next) {
             { _id: { $in: board.favored_by_ids } },
             { $pull: { fav_boards: board._id } }
         );
+        await User.updateOne(
+            { _id: board.author_id },
+            { $pull: { boards: board._id } }
+        );
 
     } catch (error: any) {
         next(error);

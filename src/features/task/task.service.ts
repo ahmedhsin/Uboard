@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import ITask from "./task.interface";
 import Task from './task.model'
-import { IUpdateData, IUpdateQuery, addUpdateQuery, createUpdateQuery } from "../helpers/update.interface";
+import { IUpdateData, IUpdateQuery, addUpdateQuery, createUpdateQuery } from "../utils/update.interface";
 import { getBoardService } from "../board/board.service";
 import { getUserService, updateUserService } from "../user/user.service";
 import { getTopicService, updateTopicService } from "../topic/topic.service";

@@ -2,13 +2,26 @@ import { Types, UpdateQuery } from "mongoose";
 import IUser from "./user.interface";
 import User from "./user.model";
 import bcrypt from 'bcrypt'
-import {IUpdateData, addUpdateQuery, IUpdateQuery, createUpdateQuery } from "../helpers/update.interface";
+import {IUpdateData, addUpdateQuery, IUpdateQuery, createUpdateQuery } from "../utils/update.interface";
 async function getUsersService(): Promise<IUser[]> {
     return await User.find().select('-password_hash').exec();
 }
 
-async function getUserService(userId: Types.ObjectId): Promise<IUser | null> {
-    return await User.findById(userId).select('-password_hash').exec();
+async function getUserService(identifier: string | Types.ObjectId): Promise<IUser | null> {
+    let query: any;
+    if (typeof identifier === 'string' && !Types.ObjectId.isValid(identifier)) {
+        query = {
+            $or: [
+                { username: identifier },
+                { email: identifier }
+            ]
+        };
+    } else {
+        query = {
+            _id: identifier
+        };
+    }
+    return await User.findOne(query);
 }
 
 async function createUserService(userData: IUser): Promise<IUser> {
