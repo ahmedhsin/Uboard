@@ -11,6 +11,7 @@ function validate(method: string) {
                 isCategory().optional(),
                 isVisibility().optional(),
                 isId('author_id'),
+                isId('board_id'),
                 isId('parent_topic_id').optional()
             ];
         }
