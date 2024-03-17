@@ -104,7 +104,7 @@ async function deleteTaskController(req: Request, res: Response): Promise<void> 
     }
 }
 
-function addFavoredUserController(req: Request, res: Response): void {
+async function addFavoredUserController(req: Request, res: Response): Promise<void> {
     try{
         const errors = handelValidation(req);
         if (errors.length > 0){
@@ -113,13 +113,13 @@ function addFavoredUserController(req: Request, res: Response): void {
         }
         const {task_id} = req.params;
         const {userId} = req.body;
-        taskService.addFavoredUserService(new Types.ObjectId(task_id), new Types.ObjectId(userId));
+        await taskService.addFavoredUserService(new Types.ObjectId(task_id), new Types.ObjectId(userId));
         res.sendStatus(204);
     }catch(err: any){
         res.status(400).json(err.message);
     }
 }
-function removeFavoredUserController(req: Request, res: Response): void{
+async function removeFavoredUserController(req: Request, res: Response): Promise<void>{
     try{
         const errors = handelValidation(req);
         if (errors.length > 0){
@@ -127,7 +127,7 @@ function removeFavoredUserController(req: Request, res: Response): void{
             return;
         }
         const {task_id, user_id} = req.params;
-        taskService.removeFavoredUserService(new Types.ObjectId(task_id), new Types.ObjectId(user_id));
+        await taskService.removeFavoredUserService(new Types.ObjectId(task_id), new Types.ObjectId(user_id));
         res.sendStatus(204);
     }catch(err: any){
         res.status(400).json(err.message);

@@ -8,7 +8,7 @@ interface IArrayOp {
 export interface IUpdateQuery{
     $set: any
     $pull: any
-    $push: any
+    $addToSet: any
 }
 export interface IUpdateData{
     [key: string]: dataType
@@ -33,7 +33,7 @@ export function addUpdateQuery(updateQuery: IUpdateQuery , field: string, data: 
     if (typeof data === 'object' && field === 'array_operation'){
         const arOp: IArrayOp = <IArrayOp>data 
         if (arOp.key === 'add'){
-            updateQuery.$push[arOp.field]= String(arOp.value)
+            updateQuery.$addToSet[arOp.field]= String(arOp.value)
         }else{
             updateQuery.$pull[arOp.field] = String(arOp.value)
         }
@@ -46,7 +46,7 @@ export function createUpdateQuery(updatedData: IUpdateData, dataCols: string[]):
     const updateQuery: IUpdateQuery = {
         $set: {},
         $pull: {},
-        $push:{}
+        $addToSet:{}
     }
     dataCols.forEach((col) => {
         try{

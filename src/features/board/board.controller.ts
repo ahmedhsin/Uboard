@@ -140,7 +140,7 @@ async function removeMemberFromBoardController(req: Request, res: Response): Pro
     }
 }
 
-function addFavoredUserController(req: Request, res: Response): void {
+async function addFavoredUserController(req: Request, res: Response): Promise<void> {
     try{
         const errors = handelValidation(req);
         if (errors.length > 0){
@@ -149,13 +149,13 @@ function addFavoredUserController(req: Request, res: Response): void {
         }
         const {board_id} = req.params;
         const {user_id} = req.body;
-        boardService.addFavoredUserService(new Types.ObjectId(board_id), new Types.ObjectId(user_id));
+        await boardService.addFavoredUserService(new Types.ObjectId(board_id), new Types.ObjectId(user_id));
         res.sendStatus(204);
     }catch(err: any){
         res.status(400).json(err.message);
     }
 }
-function removeFavoredUserController(req: Request, res: Response): void{
+async function removeFavoredUserController(req: Request, res: Response): Promise<void>{
     try{
         const errors = handelValidation(req);
         if (errors.length > 0){
@@ -163,7 +163,7 @@ function removeFavoredUserController(req: Request, res: Response): void{
             return;
         }
         const {board_id, user_id} = req.params;
-        boardService.removeFavoredUserService(new Types.ObjectId(board_id), new Types.ObjectId(user_id));
+        await boardService.removeFavoredUserService(new Types.ObjectId(board_id), new Types.ObjectId(user_id));
         res.sendStatus(204);
     }catch(err: any){
         res.status(400).json(err.message);
