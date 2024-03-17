@@ -4,7 +4,7 @@ import Topic from "./topic.model";
 import { getUserService, updateUserService } from "../user/user.service";
 import { getBoardService, updateBoardService } from "../board/board.service";
 import Board from "../board/board.model";
-import { IUpdateData, IUpdateQuery, addUpdateQuery, createUpdateQuery } from "../helpers/update.interface";
+import { IUpdateData, IUpdateQuery, addUpdateQuery, createUpdateQuery } from "../utils/update.interface";
 async function getTopicsService(): Promise<ITopic[]> {
     return await Topic.find();
 }

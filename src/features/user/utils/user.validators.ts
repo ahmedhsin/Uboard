@@ -1,6 +1,7 @@
-import * as userService from './user.service';
+import * as userService from '../user.service';
 import { body, param, query, validationResult } from "express-validator";
 import { Request } from "express";
+import { isIdParams } from '../../utils/common.validators';
 
 
 const isUserName = () => body('username').notEmpty()
@@ -51,14 +52,40 @@ const isPassword = () => body('password_hash').notEmpty()
     .withMessage('Password must be a string')
     .isLength({ min: 8, max: 50 })
     .withMessage('Password must be a string with length between 8 and 50');
-const isUserIdParams = () => param('user_id')
-    .notEmpty()
-    .withMessage('User id is required')
-    .isMongoId()
-    .withMessage('User id is not valid');
 
-const handelValidation = (req: Request) => {
-    const errors = validationResult(req);
-    return errors.array().map((i:any) => `${i.msg}`)
-}
-export { isUserName, isEmail, isFirstName, isLastName, isPassword, isUserIdParams, handelValidation};
+    function validate(method: string) {
+        switch (method) {
+            case 'createUser': {
+                return [
+                    isUserName(),
+                    isEmail(),
+                    isFirstName(),
+                    isLastName(),
+                    isPassword()
+                ];
+            }
+            case 'updateUser': {
+                return [
+                    isUserName(),
+                    isEmail(),
+                    isFirstName(),
+                    isLastName(),
+                    isIdParams('user_id')
+                ];
+            }
+            case 'getUser': {
+                return [
+                    isIdParams('user_id')
+                ];
+            
+            }
+            case 'deleteUser': {
+                return [
+                    isIdParams('user_id')
+                ];
+            }
+        }
+        return [body()];
+    }
+    
+export { isUserName, isEmail, isFirstName, isLastName, isPassword, validate};

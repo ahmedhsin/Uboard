@@ -2,10 +2,8 @@ import { Response, Request } from "express";
 import * as userService from './user.service'
 import IUser from "./user.interface";
 import { Types } from "mongoose";
-import { IUpdateData } from "../helpers/update.interface";
-import { body, query, validationResult } from "express-validator";
-import { isUserName, isEmail, isFirstName, isLastName, isPassword, isUserIdParams, handelValidation } from "./user.validators";
-
+import { IUpdateData } from "../utils/update.interface";
+import { handelValidation} from "../utils/common.validators";
 async function getUsersController(req: Request, res: Response): Promise<void> {
     try{
         const users = await userService.getUsersService()
@@ -25,6 +23,7 @@ async function getUserController(req: Request, res: Response): Promise<void>{
         }
         const id = req.params.user_id
         const user = await userService.getUserService(new Types.ObjectId(id))
+        if (!user) throw new Error('User not found');
         res.json(user)
     }catch(err: any){
         res.status(404).json(err.message);
@@ -92,46 +91,11 @@ async function deleteUserController(req: Request, res: Response): Promise<void>{
         res.status(400).json(err.message);
     }
 }
-function validate(method: string) {
-    switch (method) {
-        case 'createUser': {
-            return [
-                isUserName(),
-                isEmail(),
-                isFirstName(),
-                isLastName(),
-                isPassword()
-            ];
-        }
-        case 'updateUser': {
-            return [
-                isUserName(),
-                isEmail(),
-                isFirstName(),
-                isLastName(),
-                isUserIdParams()
-            ];
-        }
-        case 'getUser': {
-            return [
-                isUserIdParams()
-            ];
-        
-        }
-        case 'deleteUser': {
-            return [
-                isUserIdParams()
-            ];
-        }
-    }
-    return [body()];
-}
 export {
     getUserController,
     getUsersController,
     updateUserController,
     deleteUserController,
     createUserController,
-    validate
 }
 

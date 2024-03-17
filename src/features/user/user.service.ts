@@ -2,7 +2,7 @@ import { Types, UpdateQuery } from "mongoose";
 import IUser from "./user.interface";
 import User from "./user.model";
 import bcrypt from 'bcrypt'
-import {IUpdateData, addUpdateQuery, IUpdateQuery, createUpdateQuery } from "../helpers/update.interface";
+import {IUpdateData, addUpdateQuery, IUpdateQuery, createUpdateQuery } from "../utils/update.interface";
 async function getUsersService(): Promise<IUser[]> {
     return await User.find().select('-password_hash').exec();
 }

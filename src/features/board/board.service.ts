@@ -3,13 +3,14 @@ import IBoard from "./board.interface";
 import Board from './board.model'
 import { getUserService, updateUserService } from "../user/user.service";
 import bcrypt from 'bcrypt'
-import { IUpdateData, IUpdateQuery, addUpdateQuery, createUpdateQuery } from "../helpers/update.interface";
+import { IUpdateData, IUpdateQuery, addUpdateQuery, createUpdateQuery } from "../utils/update.interface";
+
 async function getBoardsService(): Promise<IBoard[]> {
     return await Board.find().select('-key').exec();
 }
 
 async function getBoardService(boardId: Types.ObjectId): Promise<IBoard | null> {
-    return await Board.findById(boardId).select('-key').exec();
+    return await Board.findById(boardId);
 }
 
 async function createBoardService(boardData: IBoard): Promise<IBoard> {
@@ -139,6 +140,8 @@ async function removeFavoredUserService(boardId: Types.ObjectId, userId: Types.O
     return true;
 }
 
+
+
 export {
     getBoardsService,
     getBoardService,
@@ -151,3 +154,4 @@ export {
     addFavoredUserService,
     removeFavoredUserService
 };
+

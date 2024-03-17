@@ -1,8 +1,10 @@
 import { Response, Request } from "express";
 import * as boardService from './board.service'
 import IBoard from "./board.interface";
-import { IUpdateData } from "../helpers/update.interface";
+import { IUpdateData } from "../utils/update.interface";
 import { Types } from "mongoose";
+import { handelValidation } from "../utils/common.validators";
+
 async function getBoardsController(req: Request, res: Response): Promise<void> {
     try{
         const boards = await boardService.getBoardsService()
@@ -14,8 +16,14 @@ async function getBoardsController(req: Request, res: Response): Promise<void> {
 
 async function getBoardController(req: Request, res: Response): Promise<void> {
     try{
+        const errors = handelValidation(req);
+        if (errors.length > 0){
+            res.status(400).json(errors);
+            return;
+        }
         const id = req.params.board_id
         const board = await boardService.getBoardService(new Types.ObjectId(id))
+        if (!board) throw new Error('Board not found');
         res.json(board)
     }catch(err: any){
         res.status(404).json(err.message);
@@ -24,6 +32,11 @@ async function getBoardController(req: Request, res: Response): Promise<void> {
 
 async function createBoardController(req: Request, res: Response): Promise<void> {
     try{
+        const errors = handelValidation(req);
+        if (errors.length > 0){
+            res.status(400).json(errors);
+            return;
+        }
         const reqBody = req.body;
         const boardData: IBoard = {
             title: reqBody.title,
@@ -42,6 +55,11 @@ async function createBoardController(req: Request, res: Response): Promise<void>
 
 async function updateBoardController(req: Request, res: Response): Promise<void> {
     try{
+        const errors = handelValidation(req);
+        if (errors.length > 0){
+            res.status(400).json(errors);
+            return;
+        }
         const reqBody = req.body;
         const {board_id} = req.params;
         const data: IUpdateData = {
@@ -58,8 +76,13 @@ async function updateBoardController(req: Request, res: Response): Promise<void>
 }
 
 async function deleteBoardController(req: Request, res: Response): Promise<void> {
-    const boardId = new Types.ObjectId(req.params.board_id);
     try{
+        const errors = handelValidation(req);
+        if (errors.length > 0){
+            res.status(400).json(errors);
+            return;
+        }
+        const boardId = new Types.ObjectId(req.params.board_id);
         const val = await boardService.deleteBoardService(boardId);
         if (val)
             res.sendStatus(204);
@@ -72,6 +95,11 @@ async function deleteBoardController(req: Request, res: Response): Promise<void>
 
 async function getBoardMembersController(req: Request, res: Response): Promise<void> {
     try{
+        const errors = handelValidation(req);
+        if (errors.length > 0){
+            res.status(400).json(errors);
+            return;
+        }
         const boardId = req.params.board_id
         const members = await boardService.getBoardMembersService(new Types.ObjectId(boardId));
         res.json(members)
@@ -82,6 +110,11 @@ async function getBoardMembersController(req: Request, res: Response): Promise<v
 
 async function addMemberToBoardController(req: Request, res: Response): Promise<void> {
     try{
+        const errors = handelValidation(req);
+        if (errors.length > 0){
+            res.status(400).json(errors);
+            return;
+        }
         const {board_id} = req.params
         const {member_id} = req.body
         const board = await boardService.addMemberToBoardService(new Types.ObjectId(board_id), member_id);
@@ -93,6 +126,11 @@ async function addMemberToBoardController(req: Request, res: Response): Promise<
 
 async function removeMemberFromBoardController(req: Request, res: Response): Promise<void> {
     try{
+        const errors = handelValidation(req);
+        if (errors.length > 0){
+            res.status(400).json(errors);
+            return;
+        }
         const {board_id, member_id} = req.params
         const board = await boardService.removeMemberFromBoardService(new Types.ObjectId(board_id),
         new Types.ObjectId(member_id));
@@ -104,9 +142,14 @@ async function removeMemberFromBoardController(req: Request, res: Response): Pro
 
 function addFavoredUserController(req: Request, res: Response): void {
     try{
+        const errors = handelValidation(req);
+        if (errors.length > 0){
+            res.status(400).json(errors);
+            return;
+        }
         const {board_id} = req.params;
-        const {userId} = req.body;
-        boardService.addFavoredUserService(new Types.ObjectId(board_id), new Types.ObjectId(userId));
+        const {user_id} = req.body;
+        boardService.addFavoredUserService(new Types.ObjectId(board_id), new Types.ObjectId(user_id));
         res.sendStatus(204);
     }catch(err: any){
         res.status(400).json(err.message);
@@ -114,6 +157,11 @@ function addFavoredUserController(req: Request, res: Response): void {
 }
 function removeFavoredUserController(req: Request, res: Response): void{
     try{
+        const errors = handelValidation(req);
+        if (errors.length > 0){
+            res.status(400).json(errors);
+            return;
+        }
         const {board_id, user_id} = req.params;
         boardService.removeFavoredUserService(new Types.ObjectId(board_id), new Types.ObjectId(user_id));
         res.sendStatus(204);
@@ -121,6 +169,8 @@ function removeFavoredUserController(req: Request, res: Response): void{
         res.status(400).json(err.message);
     }
 }
+
+
 
 
 export {
