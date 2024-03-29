@@ -9,11 +9,6 @@ router.get('/', (req, res) => {
     res.json({message: 'Welcome to the board API'})
 })
 router.use('/auth', authRouter)
-/*
-router.use('/users/:user_id/boards', boardRouter)
-router.use('/boards/:board_id/topics', topicRouter)
-router.use('/boards/:board_id/topics/:topic_id/tasks', taskRouter)
-*/
 router.use('/users', userRouter)
 router.use('/boards', boardRouter)
 router.use('/topics', topicRouter)

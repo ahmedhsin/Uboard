@@ -27,7 +27,7 @@ export function initPassport(app: Express) {
         async (username, password, done) => {
             try {
                 if (!username) { done(null, false) }
-                const user = await getUserByUsername(username)
+                const user = await User.findOne({username: username});
                 if (!user) { done(null, false) }
                 else if (await isPasswordEqual(password, user.password_hash)) {
                     done(null, user);

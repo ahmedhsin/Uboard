@@ -21,6 +21,7 @@ async function getUserByEmail(email: string): Promise<IUser | null> {
 }
 
 async function isPasswordEqual(password: string, hash: string): Promise<boolean> {
+    console.log(password, hash)
     return await bcrypt.compare(password, hash);
 }
 

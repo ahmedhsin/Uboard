@@ -3,9 +3,10 @@ import passport from "passport";
 import { isAuthenticated } from "../middlewares/auth.passport";
 const router = Router()
 
-router.post('/login', (req, res) => {
+router.post('/login', (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
+    next()
 },
     passport.authenticate('local', {
         successRedirect: 'api/auth/success',
