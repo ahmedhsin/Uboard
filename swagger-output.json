@@ -6,12 +6,69 @@
     "version": "1.0.0"
   },
   "host": "localhost:8000",
-  "basePath": "/",
+  "basePath": "/api/",
   "schemes": [
     "http"
   ],
   "paths": {
-    "/users": {
+    "/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/auth/success": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/auth/fail": {
+      "get": {
+        "description": "",
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/users/": {
       "get": {
         "description": "",
         "responses": {
@@ -76,6 +133,9 @@
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "404": {
             "description": "Not Found"
           }
@@ -113,8 +173,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "No Content"
           },
           "400": {
             "description": "Bad Request"
@@ -132,8 +192,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "No Content"
           },
           "400": {
             "description": "Bad Request"
@@ -144,9 +204,21 @@
         }
       }
     },
-    "/boards": {
+    "/boards/": {
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -175,12 +247,6 @@
                   "example": "any"
                 },
                 "public": {
-                  "example": "any"
-                },
-                "author_id": {
-                  "example": "any"
-                },
-                "key": {
                   "example": "any"
                 }
               }
@@ -211,6 +277,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
@@ -249,8 +318,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "No Content"
           },
           "400": {
             "description": "Bad Request"
@@ -273,6 +342,9 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -285,6 +357,16 @@
             "name": "board_id",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "in": "query",
             "type": "string"
           }
         ],
@@ -357,6 +439,25 @@
       }
     },
     "/boards/{board_id}/favored_by": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "board_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
       "post": {
         "description": "",
         "parameters": [
@@ -365,18 +466,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "userId": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
@@ -387,9 +476,7 @@
             "description": "Bad Request"
           }
         }
-      }
-    },
-    "/boards/{board_id}/favored_by/{user_id}": {
+      },
       "delete": {
         "description": "",
         "parameters": [
@@ -398,12 +485,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
           }
         ],
         "responses": {
@@ -416,9 +497,21 @@
         }
       }
     },
-    "/topics": {
+    "/topics/": {
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -444,9 +537,6 @@
                   "example": "any"
                 },
                 "category": {
-                  "example": "any"
-                },
-                "author_id": {
                   "example": "any"
                 },
                 "board_id": {
@@ -483,6 +573,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
@@ -537,13 +630,38 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
     },
     "/topics/{topic_id}/favored_by": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "topic_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
       "post": {
         "description": "",
         "parameters": [
@@ -552,18 +670,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "userId": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
@@ -574,9 +680,7 @@
             "description": "Bad Request"
           }
         }
-      }
-    },
-    "/topics/{topic_id}/favored_by/{user_id}": {
+      },
       "delete": {
         "description": "",
         "parameters": [
@@ -585,12 +689,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
           }
         ],
         "responses": {
@@ -603,12 +701,15 @@
         }
       }
     },
-    "/tasks": {
+    "/tasks/": {
       "get": {
         "description": "",
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "503": {
             "description": "Service Unavailable"
@@ -631,9 +732,6 @@
                   "example": "any"
                 },
                 "category": {
-                  "example": "any"
-                },
-                "author_id": {
                   "example": "any"
                 },
                 "board_id": {
@@ -676,6 +774,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
@@ -723,8 +824,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "No Content"
           },
           "400": {
             "description": "Bad Request"
@@ -747,11 +848,33 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
     },
     "/tasks/{task_id}/favored_by": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
       "post": {
         "description": "",
         "parameters": [
@@ -760,18 +883,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "userId": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
