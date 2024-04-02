@@ -1,4 +1,4 @@
-import {Request, Response} from 'express';
+import {NextFunction, Request, Response} from 'express';
 import { getBoardById } from '../services/board.service';
 import { ObjectId } from 'mongodb';
 
@@ -39,5 +39,18 @@ const isTaskOwner = (req: Request, res: Response, next: any) => {
     }
     return res.status(401).json({message: "Unauthorized"});
 }
+function isAuthenticated(req: Request ,res: Response, next: NextFunction): Response | void {
+    if(req.user)
+        return next();
+    else
+        return res.status(401).send("Unauthorized");
+}
 
-export {isBoardOwner, isTopicOwner, isTaskOwner, isBoardMemberOrOwner};
+function isNotAuthenticated(req: Request ,res: Response, next: NextFunction): Response | void {
+    if(!req.user)
+        return next();
+    else
+        return res.status(401).send("Unauthorized");
+}
+
+export {isBoardOwner, isTopicOwner, isTaskOwner, isBoardMemberOrOwner, isAuthenticated, isNotAuthenticated};

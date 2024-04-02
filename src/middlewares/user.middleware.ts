@@ -2,6 +2,7 @@ import * as userService from '../services/user.service';
 import { body, param, query, validationResult } from "express-validator";
 import { Request } from "express";
 import { isIdParams } from '../middlewares/common.validators.middleware';
+import { isAuthenticated, isNotAuthenticated } from './common.authorization.middleware';
 
 
 const isUserName = () => body('username').notEmpty()
@@ -46,46 +47,36 @@ const isLastName = () => body('last_name').notEmpty()
     .isLength({ min: 3, max: 50 })
     .withMessage('Last name must be a string with length between 3 and 50');
 
-const isPassword = () => body('password_hash').notEmpty()
+const isPassword = () => body('password').notEmpty()
     .withMessage('Password is required')
     .isString()
     .withMessage('Password must be a string')
     .isLength({ min: 8, max: 50 })
     .withMessage('Password must be a string with length between 8 and 50');
 
-    function validate(method: string) {
-        switch (method) {
-            case 'createUser': {
-                return [
-                    isUserName(),
-                    isEmail(),
-                    isFirstName(),
-                    isLastName(),
-                    isPassword()
-                ];
-            }
-            case 'updateUser': {
-                return [
-                    isUserName(),
-                    isEmail(),
-                    isFirstName(),
-                    isLastName(),
-                    isIdParams('user_id')
-                ];
-            }
-            case 'getUser': {
-                return [
-                    isIdParams('user_id')
-                ];
-            
-            }
-            case 'deleteUser': {
-                return [
-                    isIdParams('user_id')
-                ];
-            }
+function validate(method: string) {
+    switch (method) {
+        case 'createUser': {
+            return [
+                isNotAuthenticated,
+                isUserName(),
+                isEmail(),
+                isFirstName(),
+                isLastName(),
+                isPassword()
+            ];
         }
-        return [body()];
+        case 'updateUser': {
+            return [
+                isAuthenticated,
+                isUserName(),
+                isEmail(),
+                isFirstName(),
+                isLastName(),
+            ];
+        }
     }
+    return [body()];
+}
     
 export { isUserName, isEmail, isFirstName, isLastName, isPassword, validate};

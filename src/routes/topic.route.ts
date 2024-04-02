@@ -16,7 +16,7 @@ router
 
 router
     .get('/:topic_id/favored_by', topicController.getFavoredUsers)
-    .post('/:topic_id/favored_by', topicController.addFavoredUser)
-    .delete('/:topic_id/favored_by', topicController.removeFavoredUser);
+    .post('/:topic_id/favored_by', validate('addFavTopic'), topicController.addFavoredUser)
+    .delete('/:topic_id/favored_by', validate('removeFavTopic'), topicController.removeFavoredUser);
 
 export default router;

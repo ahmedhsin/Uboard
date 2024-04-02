@@ -9,9 +9,9 @@ router
 
 router
     .get('/', userController.getUsers)
-    .post('/', userController.createUser)
-    .put('/', userController.updateUser)
-    .delete('/', userController.deleteUser);
+    .post('/', validate('createUser') , userController.createUser)
+    .put('/', validate('updateUser')  , userController.updateUser)
+    .delete('/', validate('deleteUser') , userController.deleteUser);
 
 router
     .get('/:username', userController.getUserByUserName)
