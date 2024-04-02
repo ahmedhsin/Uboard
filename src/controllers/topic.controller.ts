@@ -104,7 +104,7 @@ async function deleteTopic(req: Request, res: Response): Promise<void> {
         const topicId = new Types.ObjectId(req.params.topic);
         const val = await topicService.deleteTopic(topicId);
         if (val)
-            res.sendStatus(204);
+            res.sendStatus(200);
         else
             res.sendStatus(404);
     }catch(error: any){
@@ -122,7 +122,7 @@ async function addFavoredUser(req: Request, res: Response): Promise<void> {
         const {topic_id} = req.params;
         const userId = req.user?._id;
         await topicService.addFavoredUser(new Types.ObjectId(topic_id), userId);
-        res.sendStatus(204);
+        res.sendStatus(200);
     }catch(err: any){
         res.status(400).json(err.message);
     }
@@ -137,7 +137,7 @@ async function removeFavoredUser(req: Request, res: Response): Promise<void>{
         const {topic_id} = req.params;
         const user_id = req.user?._id;
         await topicService.removeFavoredUser(new Types.ObjectId(topic_id), user_id);
-        res.sendStatus(204);
+        res.sendStatus(200);
     }catch(err: any){
         res.status(400).json(err.message);
     }

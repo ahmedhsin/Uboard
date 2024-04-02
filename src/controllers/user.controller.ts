@@ -84,7 +84,7 @@ async function updateUser(req: Request, res: Response): Promise<void>{
             last_name: reqBody.last_name,
         }
         const user = await userService.updateUser(user_id, data);
-        res.sendStatus(204);
+        res.sendStatus(200);
     }catch(err: any){
         res.status(400).json(err.message);
     }
@@ -100,7 +100,7 @@ async function deleteUser(req: Request, res: Response): Promise<void>{
         const user_id = req.user?._id;
         const isDeleted = await userService.deleteUser(user_id);
         if (isDeleted){
-            res.sendStatus(204);
+            res.sendStatus(200);
         }else{
             res.sendStatus(404);
         }
