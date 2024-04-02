@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import IBoard from "../interfaces/board.interface";
 import Board from '../models/board.model'
-import { getUserById, updateUser } from "../services/user.service";
+import { getUserById, getUserByUsername, updateUser } from "../services/user.service";
 import bcrypt from 'bcrypt'
 import { IUpdateData, IUpdateQuery, addUpdateQuery, createUpdateQuery } from "../interfaces/update.interface";
 
@@ -10,17 +10,19 @@ async function getBoards(limit: number=10, skip: number=0): Promise<IBoard[]> {
     .limit(limit)
     .skip(skip)
     .populate({
-        path: 'topics_ids',
+        path: 'topic_ids',
     })
     .exec();
 }
 
-async function getBoardsByUserId(user_id: Types.ObjectId, limit: number=10, skip: number=0): Promise<IBoard[]> {
-    return await Board.find({author_id: user_id})
+async function getBoardsByUserName(username: string, limit: number=10, skip: number=0): Promise<IBoard[] | null> {
+    const user = await getUserByUsername(username);
+    if (!user) throw new Error("author username is not related to a user");
+    return await Board.find({author_id: user._id})
     .limit(limit)
     .skip(skip)
     .populate({
-        path: 'topics_ids',
+        path: 'topic_ids',
     })
     .exec()
 }
@@ -28,7 +30,7 @@ async function getBoardsByUserId(user_id: Types.ObjectId, limit: number=10, skip
 async function getBoardById(board_id: Types.ObjectId): Promise<IBoard | null> {
     return await Board.findById(board_id)
     .populate({
-        path: 'topics_ids',
+        path: 'topic_ids',
     })
     .exec();
 }
@@ -184,7 +186,7 @@ async function removeFavoredUser(boardId: Types.ObjectId, userId: Types.ObjectId
 
 
 export {
-    getBoardsByUserId,
+    getBoardsByUserName,
     getBoards,
     getBoardById,
     createBoard,

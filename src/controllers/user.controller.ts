@@ -14,15 +14,31 @@ async function getUsers(req: Request, res: Response): Promise<void> {
 }
 
 
-async function getUser(req: Request, res: Response): Promise<void>{
+async function getUserByUserName(req: Request, res: Response): Promise<void>{
     try{
         const errors = handelValidation(req);
         if (errors.length > 0){
             res.status(400).json(errors);
             return;
         }
-        const id = req.params.user_id
-        const user = await userService.getUserById(new Types.ObjectId(id))
+        const username = req.params.username
+        const user = await userService.getUserByUsername(username);
+        if (!user) throw new Error('User not found');
+        res.json(user)
+    }catch(err: any){
+        res.status(404).json(err.message);
+    }
+}
+
+async function getCurrentUser(req: Request, res: Response): Promise<void>{
+    try{
+        const errors = handelValidation(req);
+        if (errors.length > 0){
+            res.status(400).json(errors);
+            return;
+        }
+        const username = req.user?.username
+        const user = await userService.getUserByUsername(username);
         if (!user) throw new Error('User not found');
         res.json(user)
     }catch(err: any){
@@ -43,7 +59,7 @@ async function createUser(req: Request, res: Response): Promise<void>{
             email: reqBody.email,
             first_name: reqBody.first_name,
             last_name: reqBody.last_name,
-            password_hash: reqBody.password_hash
+            password: reqBody.password
         }
         const user = await userService.createUser(userData);
         res.status(201).json({id: user._id});
@@ -60,14 +76,14 @@ async function updateUser(req: Request, res: Response): Promise<void>{
             return;
         }
         const reqBody = req.body;
-        const {user_id} = req.params;
+        const user_id = req.user?._id;
         const data: IUpdateData = {
             username: reqBody.username,
             email: reqBody.email,
             first_name: reqBody.first_name,
             last_name: reqBody.last_name,
         }
-        const user = await userService.updateUser(new Types.ObjectId(user_id), data);
+        const user = await userService.updateUser(user_id, data);
         res.sendStatus(204);
     }catch(err: any){
         res.status(400).json(err.message);
@@ -81,7 +97,8 @@ async function deleteUser(req: Request, res: Response): Promise<void>{
             res.status(400).json(errors);
             return;
         }
-        const isDeleted = await userService.deleteUser(new Types.ObjectId(req.params.user_id));
+        const user_id = req.user?._id;
+        const isDeleted = await userService.deleteUser(user_id);
         if (isDeleted){
             res.sendStatus(204);
         }else{
@@ -92,7 +109,8 @@ async function deleteUser(req: Request, res: Response): Promise<void>{
     }
 }
 export {
-    getUser,
+    getUserByUserName,
+    getCurrentUser,
     getUsers,
     updateUser,
     deleteUser,

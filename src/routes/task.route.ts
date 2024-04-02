@@ -15,6 +15,6 @@ router
 router
     .get('/:task_id/favored_by', validate('getFavoredUsers'), taskController.getFavoredUsers)
     .post('/:task_id/favored_by', validate('addFavoredUser'), taskController.addFavoredUser)
-    .delete('/:task_id/favored_by/:user_id', validate('removeFavoredUser'), taskController.removeFavoredUser);
+    .delete('/:task_id/favored_by', validate('removeFavoredUser'), taskController.removeFavoredUser);
 
 export default router;

@@ -8,18 +8,25 @@ async function getBoards(req: Request, res: Response): Promise<void> {
     try{
         const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
         const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
-        const user_id = req.params.user_id;
-        if (user_id){
-            const boards = await boardService.getBoardsByUserId(new Types.ObjectId(user_id), limit, skip)
-            res.json(boards)
-            return;
-        }
         const boards = await boardService.getBoards(limit, skip)
         res.json(boards)
     }catch(err: any){
         res.status(503).json(err.message);
     }
 }
+
+async function getBoardsByUserName(req: Request, res: Response): Promise<void> {
+    try{
+        const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+        const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
+        const username = req.params.username;
+        const boards = await boardService.getBoardsByUserName(username, limit, skip)
+        res.json(boards)
+    }catch(err: any){
+        res.status(404).json(err.message);
+    }
+}
+
 
 async function getBoard(req: Request, res: Response): Promise<void> {
     try{
@@ -208,5 +215,6 @@ export {
     removeMemberFromBoard,
     addFavoredUser,
     removeFavoredUser,
-    getFavoredUsers
+    getFavoredUsers,
+    getBoardsByUserName
 }

@@ -6,7 +6,7 @@ import authRouter from './routes/auth.route'
 import { Router } from 'express'
 const router = Router({mergeParams: true})
 router.get('/', (req, res) => {
-    res.json({message: 'Welcome to the board API'})
+    res.json({message: 'Welcome to the Uboard API'})
 })
 router.use('/auth', authRouter)
 router.use('/users', userRouter)
