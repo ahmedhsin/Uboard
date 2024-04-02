@@ -1,6 +1,6 @@
 import { body, param, query, validationResult } from "express-validator";
 import { Request } from "express";
-import { isTitle, isDescription, isCategory, isVisibility, isIdParams, isId, isLimit, isSkip } from "../middlewares/common.validators";
+import { isTitle, isDescription, isCategory, isVisibility, isIdParams, isId, isLimit, isSkip } from "./common.validators.middleware";
 
 function validate(method: string) {
     switch (method) {
