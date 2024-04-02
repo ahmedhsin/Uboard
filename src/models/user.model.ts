@@ -31,7 +31,7 @@ const userSchema = new Schema<IUser>({
         minLength: 3,
         maxLength: 50
     },
-    password_hash: {
+    password: {
         type: String,
         required: true,
         minLength: 8,

@@ -29,7 +29,7 @@ export function initPassport(app: Express) {
                 if (!username) { done(null, false) }
                 const user = await User.findOne({username: username});
                 if (!user) { done(null, false) }
-                else if (await isPasswordEqual(password, user.password_hash)) {
+                else if (await isPasswordEqual(password, user.password)) {
                     done(null, user);
                 } else {
                     done(null, false);
@@ -43,9 +43,9 @@ export function initPassport(app: Express) {
         });
     
     
-        passport.deserializeUser((user_id: Types.ObjectId, done) => {
+        passport.deserializeUser(async (user_id: Types.ObjectId, done) => {
             try {
-                const user = getUserById(user_id);
+                const user = await getUserById(user_id);
                 done(null, user);
             }catch (e) {
                 done(e);

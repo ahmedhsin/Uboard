@@ -4,7 +4,7 @@ interface IUser{
     email: string
     first_name: string
     last_name: string
-    password_hash: string
+    password: string
     boards?: Types.ObjectId[]
     fav_boards?: Types.ObjectId[]
     fav_topics?: Types.ObjectId[]
