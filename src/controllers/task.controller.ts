@@ -3,7 +3,7 @@ import * as taskService from '../services/task.service'
 import { IUpdateData } from "../interfaces/update.interface";
 import ITask from "../interfaces/task.interface";
 import { Types } from "mongoose";
-import { handelValidation } from "../middlewares/common.validators";
+import { handelValidation } from "../middlewares/common.validators.middleware";
 
 
 async function getTasks(req: Request, res: Response): Promise<void> {

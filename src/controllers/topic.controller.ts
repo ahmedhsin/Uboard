@@ -4,7 +4,7 @@ import { IUpdateData } from "../interfaces/update.interface";
 import Topic from "../models/topic.model";
 import ITopic from "../interfaces/topic.interface";
 import { Types } from "mongoose";
-import { handelValidation } from "../middlewares/common.validators";
+import { handelValidation } from "../middlewares/common.validators.middleware";
 async function getTopics(req: Request, res: Response): Promise<void> {
     try{
         const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;

@@ -1,7 +1,7 @@
 import * as userService from '../services/user.service';
 import { body, param, query, validationResult } from "express-validator";
 import { Request } from "express";
-import { isIdParams } from '../middlewares/common.validators';
+import { isIdParams } from '../middlewares/common.validators.middleware';
 
 
 const isUserName = () => body('username').notEmpty()

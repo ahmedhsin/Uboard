@@ -3,7 +3,7 @@ import * as userService from '../services/user.service'
 import IUser from "../interfaces/user.interface";
 import { Types } from "mongoose";
 import { IUpdateData } from "../interfaces/update.interface";
-import { handelValidation} from "../middlewares/common.validators";
+import { handelValidation} from "../middlewares/common.validators.middleware";
 async function getUsers(req: Request, res: Response): Promise<void> {
     try{
         const users = await userService.getUsers()

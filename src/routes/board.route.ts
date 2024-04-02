@@ -1,8 +1,8 @@
 import { Router } from "express";
 import * as boardController from '../controllers/board.controller' 
-import { validate } from "../middlewares/board.validators";
-import { isBoardOwner, isBoardMemberOrOwner } from "../middlewares/common.authorization";
-import { isAuthenticated } from "../middlewares/auth.passport";
+import { validate } from "../middlewares/board.middleware";
+import { isBoardOwner, isBoardMemberOrOwner } from "../middlewares/common.authorization.middleware";
+import { isAuthenticated } from "../middlewares/auth.middleware";
 
 const router = Router({mergeParams: true})
 

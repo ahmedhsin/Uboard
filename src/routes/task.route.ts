@@ -1,6 +1,6 @@
 import { Router } from "express";
 import * as taskController from '../controllers/task.controller'
-import { validate } from "../middlewares/task.validators";
+import { validate } from "../middlewares/task.middleware";
 const router = Router({mergeParams: true})
 
 router

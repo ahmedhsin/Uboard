@@ -1,6 +1,6 @@
 import { Router } from "express";
 import * as topicController from '../controllers/topic.controller'
-import { validate } from "../middlewares/topic.validators";
+import { validate } from "../middlewares/topic.middleware";
 
 const router = Router({mergeParams: true})
 

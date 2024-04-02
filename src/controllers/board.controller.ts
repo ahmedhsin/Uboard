@@ -3,7 +3,7 @@ import * as boardService from '../services/board.service'
 import IBoard from "../interfaces/board.interface";
 import { IUpdateData } from "../interfaces/update.interface";
 import { Types } from "mongoose";
-import { handelValidation } from "../middlewares/common.validators";
+import { handelValidation } from "../middlewares/common.validators.middleware";
 async function getBoards(req: Request, res: Response): Promise<void> {
     try{
         const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;

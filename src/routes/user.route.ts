@@ -1,7 +1,7 @@
 import { Router } from "express";
 import * as userController from '../controllers/user.controller'
 import * as boardController from '../controllers/board.controller'
-import {validate} from '../middlewares/user.validators'
+import {validate} from '../middlewares/user.middleware'
 const router = Router({mergeParams: true})
 
 router

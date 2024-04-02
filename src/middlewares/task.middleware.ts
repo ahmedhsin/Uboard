@@ -1,6 +1,6 @@
 import { body, param, query, validationResult } from "express-validator";
 import { Request } from "express";
-import { isTitle, isDescription, isCategory, isVisibility, isIdParams, isId, isBool } from "../middlewares/common.validators";
+import { isTitle, isDescription, isCategory, isVisibility, isIdParams, isId, isBool } from "../middlewares/common.validators.middleware";
 
 const isContent = () => body('content').isString().withMessage('content must be a string').
     isLength({ min: 1, max:2000 }).withMessage('content must be between 1 and 2000 characters')
