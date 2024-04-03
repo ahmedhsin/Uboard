@@ -1,9 +1,11 @@
 import {NextFunction, Request, Response} from 'express';
 import { getBoardById } from '../services/board.service';
 import { ObjectId } from 'mongodb';
+import mongoose from 'mongoose';
 
 const isBoardOwner = async (req: Request, res: Response, next: any) => {
     const board_id = req.params.board_id || req.body.board_id;
+    if (mongoose.Types.ObjectId.isValid(board_id) === false) return res.status(400).json({message: "Invalid board_id"});
     const board = await getBoardById(board_id);
     if (!board) return res.status(400).json({message: "Board not found"});
     if (req.user && req.user._id.equals(board.author_id)) {
@@ -14,6 +16,7 @@ const isBoardOwner = async (req: Request, res: Response, next: any) => {
 
 const isBoardMemberOrOwner = async (req: Request, res: Response, next: any) => {
     const board_id = req.params.board_id || req.body.board_id;
+    if (mongoose.Types.ObjectId.isValid(board_id) === false) return res.status(400).json({message: "Invalid board_id"});
     const board = await getBoardById(board_id);
     if (!board) return res.status(400).json({message: "Board not found"});
     if (req.user && req.user._id.equals(board.author_id)) {

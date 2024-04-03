@@ -1,8 +1,8 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Uboard-Api",
-    "description": "UBoard API",
+    "title": "UBoard-Api",
+    "description": "This is an Api for a tasks mangment platform",
     "version": "1.0.0"
   },
   "host": "localhost:8000",
@@ -13,7 +13,7 @@
   "paths": {
     "/": {
       "get": {
-        "description": "",
+        "description": "entry point",
         "responses": {
           "200": {
             "description": "OK"
@@ -23,7 +23,7 @@
     },
     "/auth/login": {
       "post": {
-        "description": "",
+        "description": "LogIn",
         "parameters": [
           {
             "name": "body",
@@ -32,48 +32,100 @@
               "type": "object",
               "properties": {
                 "username": {
-                  "example": "any"
+                  "example": "ahmed"
                 },
                 "password": {
-                  "example": "any"
+                  "example": "178978452a"
                 }
               }
             }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/auth/success": {
-      "get": {
-        "description": "",
-        "responses": {
           "200": {
             "description": "OK"
-          }
-        }
-      }
-    },
-    "/auth/fail": {
-      "get": {
-        "description": "",
-        "responses": {
+          },
           "401": {
-            "description": "Unauthorized"
+            "description": "Invalid username or password"
+          },
+          "400": {
+            "description": "Already Logged In"
           }
         }
       }
     },
-    "/users/": {
+    
+    "/users/?limit=10&skip=0": {
       "get": {
-        "description": "",
+        "description": "Retrive a list of users",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+              "limit": {
+                "type": "number"
+              }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+              "skip": {
+                "type": "number"
+              }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "first_name": {
+                    "type": "string"
+                  },
+                  "last_name": {
+                    "type": "string"
+                  },
+                  "_id": {
+                    "type": "string"
+                  },
+                  "boards": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "fav_boards": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "fav_topics": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "fav_tasks": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           },
           "503": {
             "description": "Service Unavailable"
