@@ -144,13 +144,16 @@ async function removeFavoredUser(req: Request, res: Response): Promise<void>{
 }
 async function getFavoredUsers(req: Request, res: Response): Promise<void> {
     try{
+
+        const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+        const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
         const errors = handelValidation(req);
         if (errors.length > 0){
             res.status(400).json(errors);
             return;
         }
         const {topic_id} = req.params;
-        const data = await topicService.getFavoredUsers(new Types.ObjectId(topic_id));
+        const data = await topicService.getFavoredUsers(new Types.ObjectId(topic_id), limit, skip);
         res.json(data)
     }catch(err: any){
         res.status(400).json(err.message);

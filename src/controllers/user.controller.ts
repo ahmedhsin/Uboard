@@ -6,7 +6,9 @@ import { IUpdateData } from "../interfaces/update.interface";
 import { handelValidation} from "../middlewares/common.validators.middleware";
 async function getUsers(req: Request, res: Response): Promise<void> {
     try{
-        const users = await userService.getUsers()
+        const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+        const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
+        const users = await userService.getUsers(limit, skip)
         res.json(users)
     }catch(err: any){
         res.status(503).json(err.message);

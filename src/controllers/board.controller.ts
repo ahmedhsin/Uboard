@@ -195,8 +195,11 @@ async function getFavoredUsers(req: Request, res: Response): Promise<void> {
             res.status(400).json(errors);
             return;
         }
+
+        const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+        const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
         const {board_id} = req.params;
-        const data = await boardService.getFavoredUsers(new Types.ObjectId(board_id));
+        const data = await boardService.getFavoredUsers(new Types.ObjectId(board_id), limit, skip);
         res.json(data);
     }catch(err: any){
         res.status(400).json(err.message);
