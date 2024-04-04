@@ -87,13 +87,12 @@ uBoard is a management platform that empowers individuals and teams to organize,
 4.  **Database Setup:**
     -   Set up a MongoDB instance locally or on a cloud provider.
     -   Configure the database connection details in the appropriate environment variable file (e.g.,  `.env`  or similar).
-5.  **Start the Server:**
+5.  **Start the Server For Devlopment:**
     
     Bash
     
     ```
-    npm run build
-    npm run start
+    npm run dev
     
     ```
     
