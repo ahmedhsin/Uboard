@@ -56,6 +56,11 @@ const isPassword = () => body('password').notEmpty()
 
 function validate(method: string) {
     switch (method) {
+        case 'me': {
+            return [
+                isAuthenticated
+            ];
+        }
         case 'createUser': {
             return [
                 isNotAuthenticated,
@@ -69,10 +74,10 @@ function validate(method: string) {
         case 'updateUser': {
             return [
                 isAuthenticated,
-                isUserName(),
-                isEmail(),
-                isFirstName(),
-                isLastName(),
+                isUserName().optional(),
+                isEmail().optional(),
+                isFirstName().optional(),
+                isLastName().optional(),
             ];
         }
     }

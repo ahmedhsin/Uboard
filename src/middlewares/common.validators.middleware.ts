@@ -7,6 +7,16 @@ const isIdParams = (name: string) => param(name)
     .isMongoId()
     .withMessage(`${name} is not valid`);
 
+const isUsernameParams = (name: string) => param(name)
+    .notEmpty()
+    .withMessage(`${name} is required`)
+    .isString()
+    .withMessage(`${name} is not valid`);
+const isUsernameBody = (name: string) => body(name)
+    .notEmpty()
+    .withMessage(`${name} is required`)
+    .isString()
+    .withMessage(`${name} is not valid`);
 const isId = (name: string) => body(name)
     .notEmpty()
     .withMessage(`${name} is required`)
@@ -71,5 +81,7 @@ export {
     isIdParams,
     isBool,
     isLimit,
-    isSkip
+    isSkip,
+    isUsernameParams,
+    isUsernameBody
 };
