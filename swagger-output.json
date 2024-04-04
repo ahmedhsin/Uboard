@@ -32,10 +32,12 @@
               "type": "object",
               "properties": {
                 "username": {
-                  "example": "ahmed"
+                  "example": "ahmed",
+                  "required": true
                 },
                 "password": {
-                  "example": "178978452a"
+                  "example": "178978452a",
+                  "required": true
                 }
               }
             }
@@ -54,8 +56,26 @@
         }
       }
     },
+    "/auth/logout": {
+      "get": {
+        "description": "LogOut",
+        "parameters": [
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid username or password"
+          },
+          "400": {
+            "description": "Already Logged Out"
+          }
+        }
+      }
+    },
     
-    "/users/?limit=10&skip=0": {
+    "/users/": {
       "get": {
         "description": "Retrive a list of users",
         "parameters": [
@@ -133,7 +153,7 @@
         }
       },
       "post": {
-        "description": "",
+        "description": "Create A User",
         "parameters": [
           {
             "name": "body",
@@ -142,19 +162,24 @@
               "type": "object",
               "properties": {
                 "username": {
-                  "example": "any"
+                  "example": "ahmed",
+                  "required": true
                 },
                 "email": {
-                  "example": "any"
+                  "example": "ahmed@gmail.com",
+                  "required": true
                 },
                 "first_name": {
-                  "example": "any"
+                  "example": "ahmed",
+                  "required": true
                 },
                 "last_name": {
-                  "example": "any"
+                  "example": "mubarak",
+                  "required": true
                 },
-                "password_hash": {
-                  "example": "any"
+                "password": {
+                  "example": "123456789a",
+                  "required": true
                 }
               }
             }
@@ -162,23 +187,51 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Created",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
-      }
-    },
-    "/users/{user_id}": {
-      "get": {
-        "description": "",
+      },
+      "put": {
+        "description": "update a user",
         "parameters": [
           {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "example": "ahmed",
+                  "required": false
+                },
+                "email": {
+                  "example": "enn@gm.com",
+                  "required": false
+                },
+                "first_name": {
+                  "example": "ahmed",
+                  "required": false
+                },
+                "last_name": {
+                  "example": "mubarak",
+                  "required": false
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -193,59 +246,146 @@
           }
         }
       },
-      "put": {
-        "description": "",
+      "delete": {
+        "description": "delete a user",
         "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           },
-          {
-            "name": "body",
-            "in": "body",
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "description": "get the current user",
+        "parameters": [
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
             "schema": {
               "type": "object",
               "properties": {
                 "username": {
-                  "example": "any"
+                  "type": "string"
                 },
                 "email": {
-                  "example": "any"
+                  "type": "string"
                 },
                 "first_name": {
-                  "example": "any"
+                  "type": "string"
                 },
                 "last_name": {
-                  "example": "any"
+                  "type": "string"
+                },
+                "_id": {
+                  "type": "string"
+                },
+                "boards": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "fav_boards": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "fav_topics": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "fav_tasks": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
             }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
-      },
-      "delete": {
-        "description": "",
+      }
+    },
+    "/users/{username}": {
+      "get": {
+        "description": "get a user by username",
         "parameters": [
           {
-            "name": "user_id",
+            "name": "username",
             "in": "path",
             "required": true,
             "type": "string"
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "first_name": {
+                  "type": "string"
+                },
+                "last_name": {
+                  "type": "string"
+                },
+                "_id": {
+                  "type": "string"
+                },
+                "boards": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "fav_boards": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "fav_topics": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "fav_tasks": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -258,7 +398,7 @@
     },
     "/boards/": {
       "get": {
-        "description": "",
+        "description": "Retrive a list of boards",
         "parameters": [
           {
             "name": "limit",
@@ -273,7 +413,48 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "public": {
+                    "type": "boolean"
+                  },
+                  "_id": {
+                    "type": "string"
+                  },
+                  "member_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "favored_by_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "topic_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           },
           "503": {
             "description": "Service Unavailable"
@@ -281,7 +462,7 @@
         }
       },
       "post": {
-        "description": "",
+        "description": "Create A board",
         "parameters": [
           {
             "name": "body",
@@ -290,16 +471,17 @@
               "type": "object",
               "properties": {
                 "title": {
-                  "example": "any"
+                  "example": "board 1",
+                  "required": true
                 },
                 "description": {
-                  "example": "any"
+                  "example": "tis is a board"
                 },
                 "category": {
-                  "example": "any"
+                  "example": "categrory 1"
                 },
                 "public": {
-                  "example": "any"
+                  "example": "true"
                 }
               }
             }
@@ -307,10 +489,21 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Created",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
@@ -328,14 +521,56 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "public": {
+                  "type": "boolean"
+                },
+                "_id": {
+                  "type": "string"
+                },
+                "member_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "favored_by_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "topic_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
+        
         }
       },
       "put": {
@@ -354,27 +589,34 @@
               "type": "object",
               "properties": {
                 "title": {
-                  "example": "any"
+                  "example": "title 1",
+                  "required": false
                 },
                 "description": {
-                  "example": "any"
+                  "example": "description 1",
+                  "required": false
                 },
                 "category": {
-                  "example": "any"
+                  "example": "categrory 1",
+                  "required": false
                 },
                 "public": {
-                  "example": "any"
+                  "example": "false",
+                  "required": false
                 }
               }
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
+          "200": {
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       },
@@ -389,21 +631,24 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
+          "200": {
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
     "/boards/{board_id}/members": {
       "get": {
-        "description": "",
+        "description": "Get list of board members",
         "parameters": [
           {
             "name": "board_id",
@@ -424,7 +669,54 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "first_name": {
+                    "type": "string"
+                  },
+                  "last_name": {
+                    "type": "string"
+                  },
+                  "_id": {
+                    "type": "string"
+                  },
+                  "boards": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "fav_boards": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "fav_topics": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "fav_tasks": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -432,7 +724,7 @@
         }
       },
       "post": {
-        "description": "",
+        "description": "Add a member to a board",
         "parameters": [
           {
             "name": "board_id",
@@ -446,8 +738,8 @@
             "schema": {
               "type": "object",
               "properties": {
-                "member_id": {
-                  "example": "any"
+                "username": {
+                  "example": "ahmed"
                 }
               }
             }
@@ -459,13 +751,16 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
-    "/boards/{board_id}/members/{member_id}": {
+    "/boards/{board_id}/members/{username}": {
       "delete": {
-        "description": "",
+        "description": "Remove a member from a board",
         "parameters": [
           {
             "name": "board_id",
@@ -474,7 +769,7 @@
             "type": "string"
           },
           {
-            "name": "member_id",
+            "name": "username",
             "in": "path",
             "required": true,
             "type": "string"
@@ -486,13 +781,16 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
     "/boards/{board_id}/favored_by": {
       "get": {
-        "description": "",
+        "description": "Get list of Fav members of a board",
         "parameters": [
           {
             "name": "board_id",
@@ -507,11 +805,14 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       },
       "post": {
-        "description": "",
+        "description": "Add fav board",
         "parameters": [
           {
             "name": "board_id",
@@ -521,16 +822,19 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
+          "200": {
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       },
       "delete": {
-        "description": "",
+        "description": "Remove fav board",
         "parameters": [
           {
             "name": "board_id",
@@ -540,18 +844,21 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
+          "200": {
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
     "/topics/": {
       "get": {
-        "description": "",
+        "description": "Get list of topics",
         "parameters": [
           {
             "name": "limit",
@@ -566,7 +873,45 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "board_id": {
+                    "type": "string"
+                  },
+                  "parent_topic_id": {
+                    "type": "string"
+                  },
+                  "_id": {
+                    "type": "string"
+                  },
+                  "favored_by_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "task_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           },
           "503": {
             "description": "Service Unavailable"
@@ -574,7 +919,7 @@
         }
       },
       "post": {
-        "description": "",
+        "description": "Create A Topic",
         "parameters": [
           {
             "name": "body",
@@ -583,19 +928,21 @@
               "type": "object",
               "properties": {
                 "title": {
-                  "example": "any"
+                  "example": "topic 1",
+                  "required": true
                 },
                 "description": {
-                  "example": "any"
+                  "example": "this is a topic"
                 },
                 "category": {
-                  "example": "any"
+                  "example": "cs"
                 },
                 "board_id": {
-                  "example": "any"
+                  "example": "4444-9999-2222-3333",
+                  "required": true
                 },
                 "parent_topic_id": {
-                  "example": "any"
+                  "example": "2222-7777-3333-1111"
                 }
               }
             }
@@ -603,17 +950,28 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Created",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
     "/topics/{topic_id}": {
       "get": {
-        "description": "",
+        "description": "Get a Topic by id",
         "parameters": [
           {
             "name": "topic_id",
@@ -624,18 +982,56 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "board_id": {
+                  "type": "string"
+                },
+                "parent_topic_id": {
+                  "type": "string"
+                },
+                "_id": {
+                  "type": "string"
+                },
+                "favored_by_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "task_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       },
       "put": {
-        "description": "",
+        "description": "Update A topic",
         "parameters": [
           {
             "name": "topic_id",
@@ -650,13 +1046,13 @@
               "type": "object",
               "properties": {
                 "title": {
-                  "example": "any"
+                  "example": "title 1"
                 },
                 "description": {
-                  "example": "any"
+                  "example": "this is a description"
                 },
                 "category": {
-                  "example": "any"
+                  "example": "this is a category"
                 }
               }
             }
@@ -668,35 +1064,14 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       },
       "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "topic_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      }
-    },
-    "/topics/{topic_id}/favored_by": {
-      "get": {
-        "description": "",
+        "description": "Remove a topic",
         "parameters": [
           {
             "name": "topic_id",
@@ -708,6 +1083,80 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/topics/{topic_id}/favored_by": {
+      "get": {
+        "description": "Get list of Fav members of a topic",
+        "parameters": [
+          {
+            "name": "topic_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "first_name": {
+                    "type": "string"
+                  },
+                  "last_name": {
+                    "type": "string"
+                  },
+                  "_id": {
+                    "type": "string"
+                  },
+                  "boards": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "fav_boards": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "fav_topics": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "fav_tasks": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -715,7 +1164,7 @@
         }
       },
       "post": {
-        "description": "",
+        "description": "Add a member to a topic",
         "parameters": [
           {
             "name": "topic_id",
@@ -725,16 +1174,19 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
+          "200": {
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       },
       "delete": {
-        "description": "",
+        "description": "Remove a member from a topic",
         "parameters": [
           {
             "name": "topic_id",
@@ -744,21 +1196,65 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
+          "200": {
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
     "/tasks/": {
       "get": {
-        "description": "",
+        "description": "Get list of tasks",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "board_id": {
+                    "type": "string"
+                  },
+                  "parent_topic_id": {
+                    "type": "string"
+                  },
+                  "start_date": {
+                    "type": "string"
+                  },
+                  "end_date": {
+                    "type": "string"
+                  },
+                  "_id": {
+                    "type": "string"
+                  },
+                  "notify": {
+                    "type": "boolean"
+                  },
+                  "finished": {
+                    "type": "boolean"
+                  },
+                  "content": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -769,7 +1265,7 @@
         }
       },
       "post": {
-        "description": "",
+        "description": "Create A Task",
         "parameters": [
           {
             "name": "body",
@@ -778,25 +1274,37 @@
               "type": "object",
               "properties": {
                 "title": {
-                  "example": "any"
+                  "example": "title 1",
+                  "required": true
                 },
                 "description": {
-                  "example": "any"
+                  "example": "this is a description"
                 },
                 "category": {
-                  "example": "any"
+                  "example": "is"
+                },
+                "content": {
+                  "example": "this is a content"
                 },
                 "board_id": {
-                  "example": "any"
+                  "example": "2222-3333-4444-5555",
+                  "required": true
                 },
                 "parent_topic_id": {
-                  "example": "any"
+                  "example": "3333-4444-5555-6666",
+                  "required": true
                 },
                 "start_date": {
-                  "example": "any"
+                  "example": "2018-12-12"
                 },
                 "end_date": {
-                  "example": "any"
+                  "example": "2018-12-12"
+                },
+                "notify": {
+                  "example": "true"
+                },
+                "finished": {
+                  "example": "false"
                 }
               }
             }
@@ -804,17 +1312,28 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Created",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
     "/tasks/{task_id}": {
       "get": {
-        "description": "",
+        "description": "Get a task by id",
         "parameters": [
           {
             "name": "task_id",
@@ -825,7 +1344,45 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "board_id": {
+                  "type": "string"
+                },
+                "parent_topic_id": {
+                  "type": "string"
+                },
+                "start_date": {
+                  "type": "string"
+                },
+                "end_date": {
+                  "type": "string"
+                },
+                "_id": {
+                  "type": "string"
+                },
+                "notify": {
+                  "type": "boolean"
+                },
+                "finished": {
+                  "type": "boolean"
+                },
+                "content": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -836,7 +1393,7 @@
         }
       },
       "put": {
-        "description": "",
+        "description": "Update A task",
         "parameters": [
           {
             "name": "task_id",
@@ -851,41 +1408,44 @@
               "type": "object",
               "properties": {
                 "title": {
-                  "example": "any"
+                  "example": "title 1"
                 },
                 "description": {
-                  "example": "any"
+                  "example": "this is a description"
                 },
                 "category": {
-                  "example": "any"
+                  "example": "is"
                 },
                 "end_date": {
-                  "example": "any"
+                  "example": "2018-12-12"
                 },
                 "notify": {
-                  "example": "any"
+                  "example": "true"
                 },
                 "finished": {
-                  "example": "any"
+                  "example": "false"
                 },
                 "content": {
-                  "example": "any"
+                  "example": "this is a content"
                 }
               }
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
+          "200": {
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       },
       "delete": {
-        "description": "",
+        "description": "Remove a task",
         "parameters": [
           {
             "name": "task_id",
@@ -895,20 +1455,108 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
+          "200": {
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request"
           },
-          "404": {
-            "description": "Not Found"
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
     "/tasks/{task_id}/favored_by": {
       "get": {
+        "description": "Get list of Fav members of a task",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "first_name": {
+                    "type": "string"
+                  },
+                  "last_name": {
+                    "type": "string"
+                  },
+                  "_id": {
+                    "type": "string"
+                  },
+                  "boards": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "fav_boards": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "fav_topics": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "fav_tasks": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "post": {
+        "description": "Add a fav task",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "delete": {
         "description": "",
         "parameters": [
           {
@@ -924,55 +1572,13 @@
           },
           "400": {
             "description": "Bad Request"
-          }
-        }
-      },
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "task_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
           },
-          "400": {
-            "description": "Bad Request"
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
-    },
-    "/tasks/{task_id}/favored_by/{user_id}": {
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "task_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      }
+
     }
   }
 }
