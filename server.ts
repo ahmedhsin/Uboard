@@ -10,7 +10,7 @@ const port = process.env.PORT || 8000;
 estabishConnection(dbUrl)
 
 import swaggerUi from 'swagger-ui-express';
-import swaggerDocument from './swagger-output.json';
+import swaggerDocument from './swagger-docs.json';
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.listen(port, () => {
