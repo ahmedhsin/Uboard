@@ -13,14 +13,6 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './swagger-output.json';
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-/*only for devlopment level  */
-if (process.env.NODE_ENV === 'development') {
-  app.get('/drop', async (req, res) => {
-    console.log('Dropping Database');
-    await mongoose.connection.dropDatabase();
-    res.send('Done')
-  })
-}
 app.listen(port, () => {
   console.log(`Server is Running at port: ${port}`);
 });
