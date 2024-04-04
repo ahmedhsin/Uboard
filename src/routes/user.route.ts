@@ -5,7 +5,7 @@ import {validate} from '../middlewares/user.middleware'
 const router = Router({mergeParams: true})
 
 router
-    .get('/me', userController.getCurrentUser)
+    .get('/me', validate('me'), userController.getCurrentUser)
 
 router
     .get('/', userController.getUsers)

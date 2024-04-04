@@ -131,8 +131,8 @@ async function addMemberToBoard(req: Request, res: Response): Promise<void> {
             return;
         }
         const {board_id} = req.params
-        const {member_id} = req.body
-        const board = await boardService.addMemberToBoard(new Types.ObjectId(board_id), member_id);
+        const {username} = req.body
+        const board = await boardService.addMemberToBoard(new Types.ObjectId(board_id), username);
         res.status(200).json(board);
     }catch(err: any){
         res.status(400).json(err.message);
@@ -146,9 +146,9 @@ async function removeMemberFromBoard(req: Request, res: Response): Promise<void>
             res.status(400).json(errors);
             return;
         }
-        const {board_id, member_id} = req.params
+        const {board_id, username} = req.params
         const board = await boardService.removeMemberFromBoard(new Types.ObjectId(board_id),
-        new Types.ObjectId(member_id));
+        username);
         res.status(200).json(board);
     }catch(err: any){
         res.status(400).json(err.message);
