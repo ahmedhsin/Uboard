@@ -82,7 +82,7 @@ async function updateBoard(req: Request, res: Response): Promise<void> {
             public: reqBody.public,
         }
         const board = await boardService.updateBoard(new Types.ObjectId(board_id), data);
-        res.sendStatus(204);
+        res.sendStatus(200);
     }catch(err: any){
         res.status(400).json(err.message);
     }
@@ -98,7 +98,7 @@ async function deleteBoard(req: Request, res: Response): Promise<void> {
         const boardId = new Types.ObjectId(req.params.board_id);
         const val = await boardService.deleteBoard(boardId);
         if (val)
-            res.sendStatus(204);
+            res.sendStatus(200);
         else
             res.sendStatus(404);
     }catch(error: any){
@@ -131,8 +131,8 @@ async function addMemberToBoard(req: Request, res: Response): Promise<void> {
             return;
         }
         const {board_id} = req.params
-        const {member_id} = req.body
-        const board = await boardService.addMemberToBoard(new Types.ObjectId(board_id), member_id);
+        const {username} = req.body
+        const board = await boardService.addMemberToBoard(new Types.ObjectId(board_id), username);
         res.status(200).json(board);
     }catch(err: any){
         res.status(400).json(err.message);
@@ -146,9 +146,9 @@ async function removeMemberFromBoard(req: Request, res: Response): Promise<void>
             res.status(400).json(errors);
             return;
         }
-        const {board_id, member_id} = req.params
+        const {board_id, username} = req.params
         const board = await boardService.removeMemberFromBoard(new Types.ObjectId(board_id),
-        new Types.ObjectId(member_id));
+        username);
         res.status(200).json(board);
     }catch(err: any){
         res.status(400).json(err.message);
@@ -165,7 +165,7 @@ async function addFavoredUser(req: Request, res: Response): Promise<void> {
         const {board_id} = req.params;
         const user_id = req.user?._id;
         await boardService.addFavoredUser(new Types.ObjectId(board_id), new Types.ObjectId(user_id));
-        res.sendStatus(204);
+        res.sendStatus(200);
     }catch(err: any){
         res.status(400).json(err.message);
     }
@@ -181,7 +181,7 @@ async function removeFavoredUser(req: Request, res: Response): Promise<void>{
         const {board_id} = req.params;
         const user_id = req.user?._id;
         await boardService.removeFavoredUser(new Types.ObjectId(board_id), new Types.ObjectId(user_id));
-        res.sendStatus(204);
+        res.sendStatus(200);
     }catch(err: any){
         res.status(400).json(err.message);
     }
@@ -195,8 +195,11 @@ async function getFavoredUsers(req: Request, res: Response): Promise<void> {
             res.status(400).json(errors);
             return;
         }
+
+        const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+        const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
         const {board_id} = req.params;
-        const data = await boardService.getFavoredUsers(new Types.ObjectId(board_id));
+        const data = await boardService.getFavoredUsers(new Types.ObjectId(board_id), limit, skip);
         res.json(data);
     }catch(err: any){
         res.status(400).json(err.message);

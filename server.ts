@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import app from './src/app';
 import estabishConnection from './src/config/db';
+import mongoose from 'mongoose'
 
 dotenv.config();
 
@@ -9,10 +10,9 @@ const port = process.env.PORT || 8000;
 estabishConnection(dbUrl)
 
 import swaggerUi from 'swagger-ui-express';
-import swaggerDocument from './swagger-output.json';
+import swaggerDocument from './swagger-docs.json';
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
 app.listen(port, () => {
   console.log(`Server is Running at port: ${port}`);
 });

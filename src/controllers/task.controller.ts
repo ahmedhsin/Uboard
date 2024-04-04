@@ -9,12 +9,14 @@ import { handelValidation } from "../middlewares/common.validators.middleware";
 async function getTasks(req: Request, res: Response): Promise<void> {
     try{
         const errors = handelValidation(req);
+        const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+        const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
         if (errors.length > 0){
             res.status(400).json(errors);
             return;
         }
-    if (req.params.topic_id) res.json(await taskService.getTasksByTopicId(new Types.ObjectId(req.params.topic_id)))
-    else res.json(await taskService.getTasks())
+    if (req.params.topic_id) res.json(await taskService.getTasksByTopicId(new Types.ObjectId(req.params.topic_id), limit, skip))
+    else res.json(await taskService.getTasks(limit, skip))
     }catch(err: any){
         res.status(503).json(err.message);
     }
@@ -80,7 +82,7 @@ async function updateTask(req: Request, res: Response): Promise<void> {
             content: reqBody.content,
         }
         const task = await taskService.updateTask(new Types.ObjectId(task_id), data);
-        res.sendStatus(204);
+        res.sendStatus(200);
     }catch(err: any){
         res.status(400).json(err.message);
     }
@@ -96,7 +98,7 @@ async function deleteTask(req: Request, res: Response): Promise<void> {
         }
         const val = await taskService.deleteTask(taskId);
         if (val)
-            res.sendStatus(204);
+            res.sendStatus(200);
         else
             res.sendStatus(404);
     }catch(error: any){
@@ -114,7 +116,7 @@ async function addFavoredUser(req: Request, res: Response): Promise<void> {
         const {task_id} = req.params;
         const userId = req.user?._id;
         await taskService.addFavoredUser(new Types.ObjectId(task_id), userId);
-        res.sendStatus(204);
+        res.sendStatus(200);
     }catch(err: any){
         res.status(400).json(err.message);
     }
@@ -129,7 +131,7 @@ async function removeFavoredUser(req: Request, res: Response): Promise<void>{
         const {task_id} = req.params;
         const user_id = req.user?._id;
         await taskService.removeFavoredUser(new Types.ObjectId(task_id), user_id);
-        res.sendStatus(204);
+        res.sendStatus(200);
     }catch(err: any){
         res.status(400).json(err.message);
     }
@@ -138,12 +140,14 @@ async function removeFavoredUser(req: Request, res: Response): Promise<void>{
 async function getFavoredUsers(req: Request, res: Response): Promise<void> {
     try{
         const errors = handelValidation(req);
+        const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+        const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
         if (errors.length > 0){
             res.status(400).json(errors);
             return;
         }
         const {task_id} = req.params;
-        const data = await taskService.getFavoredUsers(new Types.ObjectId(task_id));
+        const data = await taskService.getFavoredUsers(new Types.ObjectId(task_id), limit, skip);
         res.json(data);
     }catch(err: any){
         res.status(400).json(err.message);

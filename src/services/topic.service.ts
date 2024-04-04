@@ -75,7 +75,7 @@ async function createTopic(topicData: ITopic): Promise<ITopic> {
         //add topic id to the parent topic
         const parentTopic = await getTopicById(topicData.parent_topic_id);
         if (!parentTopic) throw new Error("parent topic is not found")
-        if (parentTopic.board_id !== board._id) throw new Error("parent topic is not in the same board")
+        if (parentTopic.board_id.equals(board._id)) throw new Error("parent topic is not in the same board")
         if (parentTopic.content_type === 'Task')
             throw new Error("parent content Type is Task not Topic")
         if (!parentTopic.content_type || parentTopic.content_type === 'Topic'){

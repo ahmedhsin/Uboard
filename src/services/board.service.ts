@@ -99,44 +99,48 @@ async function getFavoredUsers(boardId: Types.ObjectId, limit: number=10, skip: 
 }
 
 
-async function addMemberToBoard(boardId: Types.ObjectId, memberId: Types.ObjectId): Promise<IBoard | null> {
+async function addMemberToBoard(boardId: Types.ObjectId, username: string): Promise<IBoard | null> {
     const board = await getBoardById(boardId);
-    const user = await getUserById(memberId)
+    const user = await getUserByUsername(username)
     if (!board) throw new Error("board is not found")
-    if (!user) throw new Error("member is not found")
-    const updatedBoard = await Board.findOneAndUpdate(
-        { _id: boardId },
-        { $push: { member_ids: memberId } },
-        { new: true }
-    ).select('-key').exec();
-    const updateUser_ = await updateUser(memberId, {
+    if (!user || !user._id) throw new Error("member is not found")
+    const updateBoard_ = await updateBoard(boardId, {
+        array_operation: {
+            field: "member_ids",
+            key: "add",
+            value: user._id
+        }
+    })
+    const updateUser_ = await updateUser(user._id, {
         array_operation: {
             field: "boards",
             key: "add",
             value: boardId
         }
     })
-    return updatedBoard
+    return updateBoard_
 }
 
-async function removeMemberFromBoard(boardId: Types.ObjectId, memberId: Types.ObjectId): Promise<IBoard | null> {
+async function removeMemberFromBoard(boardId: Types.ObjectId, username: string): Promise<IBoard | null> {
     const board = await getBoardById(boardId);
-    const user = await getUserById(memberId)
+    const user = await getUserByUsername(username)
     if (!board) throw new Error("board is not found")
-    if (!user) throw new Error("member is not found")
-    const updatedBoard = await Board.findOneAndUpdate(
-        { _id: boardId },
-        { $pull: { member_ids: memberId } },
-        { new: true }
-    ).select('-key').exec();
-    const updateUser_ = await updateUser(memberId, {
+    if (!user || !user._id) throw new Error("member is not found")
+    const updateBoard_ = await updateBoard(boardId, {
+        array_operation: {
+            field: "member_ids",
+            key: "remove",
+            value: user._id
+        }
+    })
+    const updateUser_ = await updateUser(user._id, {
         array_operation: {
             field: "boards",
             key: "remove",
             value: boardId
         }
     })
-    return updatedBoard
+    return updateBoard_
 }
 
 async function addFavoredUser(boardId: Types.ObjectId, userId: Types.ObjectId): Promise<boolean> {

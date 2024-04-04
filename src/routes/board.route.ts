@@ -18,7 +18,7 @@ router
     .get('/:board_id/members', boardController.getBoardMembers)
     .post('/:board_id/members', validate('addMemberToBoard'),  boardController.addMemberToBoard);
 
-router.delete('/:board_id/members/:member_id' , validate('removeMemberFromBoard'),  boardController.removeMemberFromBoard);
+router.delete('/:board_id/members/:username' , validate('removeMemberFromBoard'),  boardController.removeMemberFromBoard);
 
 router
     .get('/:board_id/favored_by',  boardController.getFavoredUsers)

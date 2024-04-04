@@ -1,7 +1,8 @@
 import { body, param, query, validationResult } from "express-validator";
 import { Request } from "express";
-import { isTitle, isDescription, isCategory, isVisibility, isIdParams, isId, isLimit, isSkip } from "./common.validators.middleware";
-import { isAuthenticated, isBoardOwner } from "./common.authorization.middleware";
+import { isTitle, isDescription, isCategory, isVisibility, isIdParams, isId, isLimit, isSkip,
+     isUsernameBody, isUsernameParams } from "./common.validators.middleware";
+import { isAuthenticated, isBoardMemberOrOwner, isBoardOwner } from "./common.authorization.middleware";
 
 function validate(method: string) {
     switch (method) {
@@ -47,15 +48,15 @@ function validate(method: string) {
                 isAuthenticated,
                 isBoardOwner,
                 isIdParams('board_id'),
-                isId('member_id')
+                isUsernameBody('username')
             ];
         }
         case 'removeMemberFromBoard': {
             return [
                 isAuthenticated,
-                isBoardOwner,
+                isBoardMemberOrOwner,
                 isIdParams('board_id'),
-                isIdParams('member_id')
+                isUsernameParams('username')
             ];
         }
         case 'addFavoredUser': {

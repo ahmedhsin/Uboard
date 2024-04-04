@@ -6,7 +6,9 @@ import { IUpdateData } from "../interfaces/update.interface";
 import { handelValidation} from "../middlewares/common.validators.middleware";
 async function getUsers(req: Request, res: Response): Promise<void> {
     try{
-        const users = await userService.getUsers()
+        const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+        const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
+        const users = await userService.getUsers(limit, skip)
         res.json(users)
     }catch(err: any){
         res.status(503).json(err.message);
@@ -84,7 +86,7 @@ async function updateUser(req: Request, res: Response): Promise<void>{
             last_name: reqBody.last_name,
         }
         const user = await userService.updateUser(user_id, data);
-        res.sendStatus(204);
+        res.sendStatus(200);
     }catch(err: any){
         res.status(400).json(err.message);
     }
@@ -100,7 +102,7 @@ async function deleteUser(req: Request, res: Response): Promise<void>{
         const user_id = req.user?._id;
         const isDeleted = await userService.deleteUser(user_id);
         if (isDeleted){
-            res.sendStatus(204);
+            res.sendStatus(200);
         }else{
             res.sendStatus(404);
         }

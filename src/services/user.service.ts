@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt'
 import {IUpdateData, addUpdateQuery, IUpdateQuery, createUpdateQuery } from "../interfaces/update.interface";
 
 async function getUsers(limit: number = 10, skip: number = 0): Promise<IUser[]> {
+    console.log(limit, skip)
     return await User.find().select('-password').limit(limit).skip(skip).exec();
 }
 
